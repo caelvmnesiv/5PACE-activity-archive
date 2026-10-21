@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "site_title": "5PACE Activity Archive",
+  "activities": [
+    {
+      "id": "ACT-026",
+      "title": "SOMEONE BEHIND",
+      "cover_title": "SOMEONE\nBEHIND",
+      "category": "special-event",
+      "status": "draft",
+      "published": "2026-10-20",
+      "deadline": null,
+      "updated": "2026-10-20",
+      "summary": "¿Con quién te quedaste en la oficina? Una experiencia narrativa de misterio, terror sobrenatural y tensión psicológica.",
+      "overview": "Esta ficha es una plantilla de ejemplo para el evento inmersivo de misterio de 5PACE. Completa los detalles aprobados antes de cambiar el estado a OPEN.",
+      "instructions": "REEMPLAZAR: añade aquí la premisa oficial, el desarrollo de la experiencia, las etapas del juego y cualquier regla narrativa que los participantes deban conocer.",
+      "requirements_list": [
+        "REEMPLAZAR: indica quiénes pueden participar y si se necesita un equipo.",
+        "REEMPLAZAR: añade las condiciones para reservar o inscribirse."
+      ],
+      "how_to_participate": [
+        "Lee todas las instrucciones de la ficha.",
+        "Abre la publicación oficial de Facebook desde el botón cuando se haya añadido el enlace.",
+        "Sigue el procedimiento de reserva indicado por administración."
+      ],
+      "submission": "REEMPLAZAR: especifica dónde, cómo y hasta cuándo se entregan las respuestas o resultados.",
+      "notes": "Ficha de demostración. No publicar como convocatoria definitiva hasta revisar las instrucciones, fechas, recompensas y enlace.",
+      "reward": null,
+      "reservation_code": null,
+      "facebook_url": "",
+      "cover_image": "",
+      "cover_style": "cover-mystery",
+      "tags": [
+        "MYSTERY",
+        "PSYCHOLOGICAL HORROR",
+        "IMMERSIVE GAME"
+      ],
+      "demo": true
+    },
+    {
+      "id": "ACT-025",
+      "title": "5PACE BINGO",
+      "cover_title": "5PACE\nBINGO",
+      "category": "special-event",
+      "status": "archived",
+      "published": "2026-10-01",
+      "deadline": null,
+      "updated": "2026-10-20",
+      "summary": "Una dinámica musical con cartones personalizados y casillas para completar durante el evento.",
+      "overview": "Ficha de demostración para mostrar cómo se archiva un evento terminado. Reemplaza el texto de ejemplo por la versión definitiva de las reglas si deseas conservar esta actividad en el catálogo.",
+      "instructions": "REEMPLAZAR: explica cómo se asignan los cartones, cómo se anuncian las canciones o consignas, cómo se valida una línea y cómo se determina al ganador.",
+      "requirements_list": [
+        "REEMPLAZAR: añade los materiales o datos que necesita cada participante.",
+        "REEMPLAZAR: añade las reglas para validar los resultados."
+      ],
+      "how_to_participate": [
+        "Consulta las reglas oficiales.",
+        "Participa siguiendo las indicaciones de administración."
+      ],
+      "submission": "REEMPLAZAR: indica cómo se reportan los resultados y qué evidencia se necesita.",
+      "notes": "Ficha de demostración archivada. Ajusta el estado, las fechas y las instrucciones antes de utilizarla como registro histórico definitivo.",
+      "reward": null,
+      "reservation_code": null,
+      "facebook_url": "",
+      "cover_image": "",
+      "cover_style": "cover-music",
+      "tags": [
+        "MUSIC",
+        "BINGO",
+        "COMMUNITY"
+      ],
+      "demo": true
+    },
+    {
+      "id": "ACT-024",
+      "title": "FREECTIVITIE5",
+      "cover_title": "FREE\nCTIVITIE5",
+      "category": "free-activity",
+      "status": "draft",
+      "published": "2026-10-01",
+      "deadline": null,
+      "updated": "2026-10-20",
+      "summary": "Prompts libres para crear, escribir y participar a tu propio ritmo dentro del universo 5PACE.",
+      "overview": "Ficha de demostración para actividades libres. Define aquí la consigna vigente y las condiciones para que la participación pueda validarse.",
+      "instructions": "REEMPLAZAR: añade el prompt completo, el formato de respuesta permitido y cualquier restricción temática o creativa.",
+      "requirements_list": [
+        "REEMPLAZAR: indica si se permite texto, imagen, audio u otros formatos.",
+        "REEMPLAZAR: especifica si la actividad es individual o colaborativa."
+      ],
+      "how_to_participate": [
+        "Lee el prompt completo.",
+        "Prepara tu respuesta siguiendo el formato establecido.",
+        "Publica o entrega tu respuesta en el espacio indicado por administración."
+      ],
+      "submission": "REEMPLAZAR: añade el lugar de entrega y el criterio de validación.",
+      "notes": "La recompensa de ejemplo debe verificarse antes de activar la ficha. No se asigna una cantidad automáticamente.",
+      "reward": null,
+      "reservation_code": null,
+      "facebook_url": "",
+      "cover_image": "",
+      "cover_style": "cover-free",
+      "tags": [
+        "CREATIVE PROMPT",
+        "OPEN FORMAT",
+        "INDIVIDUAL"
+      ],
+      "demo": true
+    }
+  ]
+}
