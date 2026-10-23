@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#101116">
-  <meta name="description" content="5PACE activity archive — assignments, experiments and after-office activities from STUDIO 506.">
-  <title>5PACE® — Activity Archive</title>
+  <meta name="description" content="5PACE — directorio de actividades mensuales.">
+  <title>5PACE® — Actividades</title>
   <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/style.css">
   <script src="js/app.js" defer></script>
@@ -13,96 +13,32 @@
 <body>
   <div class="site-shell">
     <header class="topbar">
-      <a class="brand" href="index.html" aria-label="5PACE Activity Archive home">
-        <span class="brand-mark">5P</span>
-        <span class="brand-copy"><strong>5PACE<span class="registered">®</span></strong><small>STUDIO 506 / INTERNAL ARCHIVE</small></span>
+      <a class="brand" href="index.html" aria-label="Inicio 5PACE">
+        <img class="brand-logo" src="assets/logo.svg" alt="">
+        <span class="brand-copy"><strong>5PACE<span class="registered">®</span></strong><small>STUDIO 506 / ACTIVITY ARCHIVE</small></span>
       </a>
-      <div class="system-status"><span class="status-dot"></span> SYS.ONLINE <span class="status-divider">/</span> VER. 1.0</div>
+      <div class="system-status"><span class="status-dot"></span> SYS.ONLINE <span class="status-divider">/</span> 2026</div>
     </header>
-
     <main>
       <section class="hero">
-        <div class="hero-kicker"><span class="eyebrow-line"></span> ACTIVITY DATABASE <span class="slash">/</span> <span id="edition-label">EDITION 2026</span></div>
-        <h1>Pick your task.<br><span>Make it yours.</span></h1>
-        <p class="hero-copy">Un solo lugar para consultar convocatorias, instrucciones y fechas importantes. Busca tu próxima actividad y vuelve a esta página cuando necesites revisar los detalles.</p>
-        <div class="hero-meta">
-          <span><b id="total-count">00</b> FILES INDEXED</span>
-          <span><b id="open-count">00</b> OPEN NOW</span>
-          <span>EST. STUDIO 506</span>
-        </div>
+        <div class="hero-kicker"><span class="eyebrow-line"></span> PORTAFOLIO DE ACTIVIDADES <span class="slash">/</span> OCTOBER 2026</div>
+        <h1>Choose your task.<br><span>Make it yours.</span></h1>
+        <p class="hero-copy">Consulta las actividades de 5PACE. Cada ficha te lleva directamente a su publicación en Facebook, donde encontrarás la información oficial para participar.</p>
+        <div class="hero-meta"><span><b id="total-count">00</b> ACTIVIDADES</span><span><b id="open-count">00</b> ENLACES DISPONIBLES</span><span>STUDIO 506</span></div>
       </section>
-
       <section class="archive-section" aria-labelledby="archive-heading">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">01 / THE DIRECTORY</p>
-            <h2 id="archive-heading">Activity board<span class="accent">.</span></h2>
-          </div>
-          <div class="view-note">BROWSE · FILTER · OPEN FILE</div>
-        </div>
-
+        <div class="section-heading"><div><p class="eyebrow">01 / DIRECTORY</p><h2 id="archive-heading">Activity board<span class="accent">.</span></h2></div><div class="view-note">SEARCH · FILTER · OPEN</div></div>
         <div class="toolbar">
-          <label class="searchbox" for="search-input">
-            <span class="search-icon" aria-hidden="true">⌕</span>
-            <input id="search-input" type="search" placeholder="Search title, code or keyword..." autocomplete="off">
-            <kbd>/</kbd>
-          </label>
-          <label class="select-wrap" for="category-filter">
-            <span class="sr-only">Filter by category</span>
-            <select id="category-filter">
-              <option value="all">ALL CATEGORIES</option>
-            </select>
-          </label>
-          <label class="select-wrap" for="status-filter">
-            <span class="sr-only">Filter by status</span>
-            <select id="status-filter">
-              <option value="all">ALL STATUS</option>
-              <option value="open">OPEN NOW</option>
-              <option value="upcoming">UPCOMING</option>
-              <option value="closed">CLOSED</option>
-              <option value="archived">ARCHIVE</option>
-              <option value="draft">DRAFT</option>
-            </select>
-          </label>
-          <label class="select-wrap sort-wrap" for="sort-filter">
-            <span class="sr-only">Sort activities</span>
-            <select id="sort-filter">
-              <option value="newest">LATEST FIRST</option>
-              <option value="oldest">OLDEST FIRST</option>
-              <option value="title">TITLE A—Z</option>
-              <option value="deadline">DEADLINE SOON</option>
-            </select>
-          </label>
+          <label class="searchbox" for="search-input"><span class="search-icon" aria-hidden="true">⌕</span><input id="search-input" type="search" placeholder="Buscar actividad..." autocomplete="off"><kbd>/</kbd></label>
+          <label class="select-wrap" for="category-filter"><span class="sr-only">Filtrar por tipo</span><select id="category-filter"><option value="all">TODOS LOS TIPOS</option></select></label>
         </div>
-
-        <div class="results-row">
-          <span id="results-label">LOADING FILES...</span>
-          <button id="reset-filters" class="text-button" type="button">RESET FILTERS ↺</button>
-        </div>
-
-        <div id="activity-grid" class="activity-grid" aria-live="polite">
-          <div class="loading-card">LOADING ARCHIVE<span class="loading-cursor">_</span></div>
-        </div>
-        <div id="empty-state" class="empty-state" hidden>
-          <span class="empty-symbol">[ 00 ]</span>
-          <h3>No files found.</h3>
-          <p>No hay actividades que coincidan con esos filtros. Prueba con otra búsqueda.</p>
-          <button id="empty-reset" class="button button-secondary" type="button">CLEAR SEARCH</button>
-        </div>
+        <div class="results-row"><span id="results-label">CARGANDO ACTIVIDADES...</span><button id="reset-filters" class="text-button" type="button">LIMPIAR FILTROS ↺</button></div>
+        <div id="activity-grid" class="activity-grid" aria-live="polite"><div class="loading-card">LOADING ARCHIVE<span class="loading-cursor">_</span></div></div>
+        <div id="empty-state" class="empty-state" hidden><span class="empty-symbol">[ 00 ]</span><h3>No se encontraron actividades.</h3><p>Prueba con otra búsqueda o selecciona un tipo diferente.</p><button id="empty-reset" class="button button-secondary" type="button">LIMPIAR BÚSQUEDA</button></div>
       </section>
-
-      <section class="info-strip">
-        <div class="info-index">NOTE_001</div>
-        <div><h3>Keep this file close.</h3><p>Las instrucciones oficiales viven aquí. Usa el enlace de cada ficha para ir a Facebook y participar; revisa las fechas antes de enviar tu entrega.</p></div>
-        <div class="info-ascii" aria-hidden="true">5P<br>///</div>
-      </section>
+      <section class="info-strip"><div class="info-index">NOTE_001</div><div><h3>Open the original post.</h3><p>Las tarjetas contienen únicamente el nombre, el tipo de actividad y el acceso a la publicación original. Facebook puede solicitar que inicies sesión o pertenezcas al grupo para ver el contenido.</p></div><div class="info-ascii" aria-hidden="true">5P<br>///</div></section>
     </main>
-
-    <footer class="footer">
-      <a class="footer-brand" href="index.html">5PACE®</a>
-      <span>COORDINATES FOR RESTLESS EXPLORERS</span>
-      <span>© STUDIO 506 · ACTIVITY ARCHIVE</span>
-    </footer>
+    <footer class="footer"><a class="footer-brand" href="index.html">5PACE®</a><span>COORDINATES FOR RESTLESS EXPLORERS</span><span>© STUDIO 506 · ACTIVITY ARCHIVE</span></footer>
   </div>
 </body>
 </html>
