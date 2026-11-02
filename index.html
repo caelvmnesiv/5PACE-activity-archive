@@ -1,68 +1,32 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f2f0ec">
-  <meta name="description" content="5PACE — DATA BASE, The Magazine y Activity Board.">
-  <title>DATA BASE — 5PACE®</title>
-  <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/style.css">
-  <script src="js/app.js" defer></script>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f2f0ec"><meta name="description" content="5PACE — Activity Board, members archive and editorial index.">
+<title>DATA BASE — 5PACE®</title><link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+<script src="js/app.js" defer></script>
 </head>
-<body>
-  <div class="site-shell">
-    <header class="topbar">
-      <a class="brand" href="index.html" aria-label="Inicio 5PACE">
-        <img class="brand-logo" src="assets/logo.svg" alt="">
-        <span class="brand-copy"><strong>DATA BASE <span class="registered">— 5PACE®</span></strong><small>STUDIO 506 / INFORMATION SYSTEM</small></span>
-      </a>
-      <div class="system-status"><span class="status-dot"></span> SYSTEM ONLINE <span class="status-divider">/</span> 2026</div>
-    </header>
-    <main>
-      <section class="hero" aria-labelledby="hero-title">
-        <div class="hero-kicker"><span class="eyebrow-line"></span> 5PACE INFORMATION SYSTEM <span class="slash">/</span> OCTOBER 2026</div>
-        <h1 id="hero-title">A living index<br><span>of everything 5PACE.</span></h1>
-        <p class="hero-copy">Un punto de acceso a las publicaciones, actividades y piezas editoriales de 5PACE. Explora el archivo y abre cada publicación desde su fuente original.</p>
-        <div class="hero-meta"><span><b id="total-count">00</b> ACTIVIDADES INDEXADAS</span><span><b id="open-count">00</b> ENLACES ACTIVOS</span><span>STUDIO 506</span></div>
-        <div class="hero-stamp" aria-hidden="true">DB—506<br><span>INDEX / 026</span></div>
-      </section>
-
-      <section class="magazine-panel" aria-labelledby="magazine-heading">
-        <div class="panel-topline"><span>01 / EDITORIAL DESK</span><span>THE MAGAZINE <i>®</i></span></div>
-        <div class="magazine-layout">
-          <div class="magazine-main">
-            <p class="eyebrow">THE MAGAZINE / VOL. 01</p>
-            <h2 id="magazine-heading">Culture in<br><em>constant motion.</em></h2>
-            <p class="magazine-copy">Ideas, prompts and fragments from the 5PACE universe. Una portada editorial para reunir la identidad y las publicaciones que dan forma al proyecto.</p>
-            <div class="magazine-bottom"><span>STUDIO 506 — EDITORIAL ARCHIVE</span><span class="red-mark">●●●</span></div>
-          </div>
-          <aside class="magazine-side">
-            <div class="issue-number">026<span>ISSUE INDEX</span></div>
-            <div class="side-rule"></div>
-            <p class="side-label">CURRENT EDITION</p>
-            <p class="side-title">OCTOBER<br>AFTER HOURS</p>
-            <p class="side-note">A collection of activities, office prompts and creative dispatches.</p>
-            <span class="side-arrow">↘</span>
-          </aside>
-        </div>
-      </section>
-
-      <section class="archive-section" aria-labelledby="archive-heading">
-        <div class="panel-topline"><span>02 / COMMUNITY INDEX</span><span>ACTIVITY BOARD <i>®</i></span></div>
-        <div class="section-heading"><div><p class="eyebrow">ACTIVITY BOARD / DIRECTORY</p><h2 id="archive-heading">Find your<br><span class="accent">next move.</span></h2></div><div class="view-note">SEARCH <span>+</span> FILTER <span>+</span> OPEN</div></div>
-        <div class="toolbar">
-          <label class="searchbox" for="search-input"><span class="search-icon" aria-hidden="true">⌕</span><input id="search-input" type="search" placeholder="Buscar actividad..." autocomplete="off"><kbd>/</kbd></label>
-          <label class="select-wrap" for="category-filter"><span class="sr-only">Filtrar por tipo</span><select id="category-filter"><option value="all">TODOS LOS TIPOS</option></select></label>
-        </div>
-        <div class="results-row"><span id="results-label">CARGANDO ACTIVIDADES...</span><button id="reset-filters" class="text-button" type="button">RESET FILTERS ↺</button></div>
-        <div id="activity-grid" class="activity-grid" aria-live="polite"><div class="loading-card">LOADING DATABASE<span class="loading-cursor">_</span></div></div>
-        <div id="empty-state" class="empty-state" hidden><span class="empty-symbol">[ 00 ]</span><h3>No se encontraron actividades.</h3><p>Prueba con otra búsqueda o selecciona un tipo diferente.</p><button id="empty-reset" class="button button-secondary" type="button">LIMPIAR BÚSQUEDA</button></div>
-        <div class="archive-foot"><span>END OF CURRENT INDEX</span><span>5PACE® / STUDIO 506</span></div>
-      </section>
-      <section class="info-strip"><div class="info-index">NOTE_001</div><div><h3>Open the original post.</h3><p>Las tarjetas contienen el nombre, el tipo de actividad y el acceso a su publicación original. Facebook puede solicitar que inicies sesión o pertenezcas al grupo para ver el contenido.</p></div><div class="info-ascii" aria-hidden="true">5P<br>///</div></section>
-    </main>
-    <footer class="footer"><a class="footer-brand" href="index.html">DATA BASE — 5PACE®</a><span>COORDINATES FOR RESTLESS EXPLORERS</span><span>© STUDIO 506 · INFORMATION SYSTEM</span></footer>
-  </div>
-</body>
-</html>
+<body><div class="site-shell">
+<header class="topbar">
+<a class="brand" href="index.html" aria-label="Inicio 5PACE"><img class="brand-logo" src="assets/logo.svg" alt=""><span class="brand-copy"><strong>DATA BASE <span class="registered">— 5PACE®</span></strong><small>STUDIO 506 / INFORMATION SYSTEM</small></span></a>
+<div class="header-actions"><span class="system-status"><span class="status-dot"></span><span id="admin-indicator">MEMBERS ONLY</span></span><button id="auth-open" class="button button-secondary" type="button">MEMBER LOGIN ↗</button><div id="account-bar" hidden><span id="account-email"></span><button id="logout-button" class="text-button" type="button">SIGN OUT ↗</button></div></div>
+</header>
+<main>
+<section class="hero"><div class="hero-kicker"><span class="eyebrow-line"></span> 5PACE INFORMATION SYSTEM <span class="slash">/</span> MEMBERS ARCHIVE</div>
+<h1>A living index<br><span>of everything 5PACE.</span></h1>
+<p class="hero-copy">Un punto de acceso a las publicaciones, actividades y piezas editoriales de 5PACE. El Activity Board está reservado para miembros aprobados.</p>
+<div class="hero-meta"><span><b id="total-count">00</b> ACTIVIDADES VISIBLES</span><span><b id="open-count">00</b> ENLACES ACTIVOS</span><span>STUDIO 506</span></div><div class="hero-stamp" aria-hidden="true">DB—506<br><span>MEMBERS / 026</span></div></section>
+<section id="auth-panel" class="auth-panel" hidden><div><p class="eyebrow">MEMBER ACCESS / AUTHENTICATION</p><h2>Sign in to<br><em>your 5PACE account.</em></h2><p class="muted-small">El acceso requiere una cuenta previamente aprobada. Si todavía no tienes acceso, solicita la membresía por el chat de Facebook de 5PACE.</p><a class="text-button" href="https://www.facebook.com/profile.php?id=61591053897750" target="_blank" rel="noopener noreferrer">REQUEST MEMBERSHIP ↗</a></div><form id="login-form" class="login-form"><label for="login-email">EMAIL ADDRESS</label><input id="login-email" type="email" autocomplete="username" required placeholder="name@email.com"><label for="login-password">PASSWORD</label><input id="login-password" type="password" autocomplete="current-password" required placeholder="••••••••"><button class="button" type="submit">SIGN IN ↗</button><p id="auth-message" class="form-message" role="status"></p></form></section>
+<section class="magazine-panel"><div class="panel-topline"><span>01 / EDITORIAL DESK</span><span>THE MAGAZINE <i>®</i></span></div><div class="magazine-layout"><div class="magazine-main"><p class="eyebrow">THE MAGAZINE / VOL. 01</p><h2>Culture in<br><em>constant motion.</em></h2><p class="magazine-copy">Ideas, prompts and fragments from the 5PACE universe. Explora la publicación editorial y las piezas que dan forma al proyecto.</p><a class="button" href="https://heyzine.com/flip-book/5912be048a" target="_blank" rel="noopener noreferrer">OPEN THE MAGAZINE ↗</a><div class="magazine-bottom"><span>STUDIO 506 — EDITORIAL ARCHIVE</span><span class="red-mark">●●●</span></div></div><aside class="magazine-side"><div class="issue-number">026<span>ISSUE INDEX</span></div><div class="side-rule"></div><p class="side-label">CURRENT EDITION</p><p class="side-title">5PACE<br>MAGAZINE</p><p class="side-note">A collection of activities, office prompts and creative dispatches.</p><span class="side-arrow">↘</span></aside></div></section>
+<section class="archive-section"><div class="panel-topline"><span>02 / COMMUNITY INDEX</span><span>ACTIVITY BOARD <i>®</i></span></div><div class="section-heading"><div><p class="eyebrow">ACTIVITY BOARD / DIRECTORY</p><h2>Find your<br><span class="accent">next move.</span></h2></div><div class="view-note">SEARCH <span>+</span> FILTER <span>+</span> OPEN</div></div>
+<div class="toolbar"><label class="searchbox" for="search-input"><span class="search-icon">⌕</span><input id="search-input" type="search" placeholder="Buscar actividad..." autocomplete="off"><kbd>/</kbd></label><label class="select-wrap" for="category-filter"><span class="sr-only">Filtrar por tipo</span><select id="category-filter"><option value="all">TODOS LOS TIPOS</option></select></label></div>
+<div class="results-row"><span id="results-label">CONNECTING...</span><button id="reset-filters" class="text-button" type="button">RESET FILTERS ↺</button></div>
+<div id="activity-grid" class="activity-grid" aria-live="polite"><div class="loading-card">CONNECTING TO SECURE DATABASE...</div></div>
+<div id="empty-state" class="empty-state" hidden><span class="empty-symbol">[ 00 ]</span><h3>No se encontraron actividades.</h3><p>Inicia sesión con una cuenta aprobada para consultar el Activity Board.</p><button id="empty-reset" class="button button-secondary" type="button">CLEAR SEARCH</button></div>
+<div class="archive-foot"><span>END OF CURRENT INDEX</span><span>5PACE® / STUDIO 506</span></div></section>
+<section id="admin-panel" class="admin-panel" hidden><div class="panel-topline"><span>03 / ADMINISTRATION</span><span>ADMIN CONSOLE <i>®</i></span></div><div class="admin-heading"><div><p class="eyebrow">DATABASE MANAGEMENT</p><h2>Manage the<br><span class="accent">activity index.</span></h2></div><span class="admin-stamp">ADMIN<br>ONLY</span></div><form id="activity-form" class="activity-form"><h3 id="activity-form-title">NEW ACTIVITY</h3><div class="admin-fields"><label>TITLE<input id="activity-title" maxlength="180" required placeholder="Activity title"></label><label>CATEGORY<select id="activity-category" required><option>Office’ prompts</option><option>#FREECTIVITIE5</option><option>Archive</option></select></label><label class="field-wide">FACEBOOK URL<input id="activity-url" type="url" placeholder="https://www.facebook.com/..."></label><label>PUBLICATION STATUS<select id="activity-status"><option value="draft">DRAFT — hidden</option><option value="published">PUBLISHED — members</option><option value="archived">ARCHIVED — members</option></select></label></div><div class="admin-form-actions"><button id="activity-save" class="button" type="submit">SAVE AS DRAFT</button><button id="activity-cancel" class="button button-secondary" type="button">CLEAR FORM</button></div><p id="admin-message" class="form-message" role="status"></p></form><p class="admin-note">Los miembros aprobados solo consultan las actividades publicadas o archivadas. Los borradores quedan reservados para administración.</p></section>
+<section class="info-strip"><div class="info-index">NOTE_001</div><div><h3>Open the original post.</h3><p>Las tarjetas contienen el nombre, el tipo de actividad y el acceso a su publicación original. Facebook puede solicitar que inicies sesión o pertenezcas al grupo para ver el contenido.</p></div><div class="info-ascii">5P<br>///</div></section>
+<section class="about-strip"><p class="eyebrow">04 / ABOUT 5PACE</p><h2>A space for<br><em>creative minds.</em></h2><p>5PACE reúne a personas creativas alrededor de la música, la cultura visual y la colaboración. ¿Te interesa participar o contribuir? Escríbenos por Facebook y solicita información para unirte.</p><a class="text-button" href="https://www.facebook.com/profile.php?id=61591053897750" target="_blank" rel="noopener noreferrer">CONNECT WITH 5PACE ↗</a></section>
+</main><footer class="footer"><a class="footer-brand" href="index.html">DATA BASE — 5PACE®</a><span>COORDINATES FOR RESTLESS EXPLORERS</span><span>© STUDIO 506 · INFORMATION SYSTEM</span></footer></div></body></html>
