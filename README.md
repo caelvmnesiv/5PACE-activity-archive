@@ -1,74 +1,64 @@
-# 5PACE Activity Archive
+# 5PACE Activity Board
 
-Sitio estático para publicar el catálogo de actividades de 5PACE mediante GitHub Pages. Diseño Y2K/editorial, navegación en inglés y explicaciones en español.
+Sitio editorial de 5PACE con un Activity Board conectado a Supabase. La web estática puede publicarse con GitHub Pages; los registros de actividades ya no se sirven desde archivos públicos.
 
-## Archivos
+## Estructura
 
-- `index.html`: catálogo, buscador y filtros.
-- `activity.html`: ficha individual, abierta mediante `activity.html?id=ACT-026`.
-- `data/activities.json`: registros que mantiene la administración.
+- `index.html`: Magazine, Activity Board, inicio de sesión y consola administrativa.
+- `js/app.js`: autenticación Supabase, consulta protegida y operaciones de administración.
+- `js/activity.js`: redirección de compatibilidad para enlaces antiguos a fichas individuales.
 - `css/style.css`: identidad visual y diseño responsive.
-- `js/app.js`: renderizado del catálogo, búsqueda, filtros y orden.
-- `js/activity.js`: renderizado de la ficha individual.
-- `assets/`: icono y espacio para portadas.
+- `supabase/migrations/`: SQL necesario para permisos y función RPC de administrador.
+- `assets/`: recursos visuales.
 
-## Antes de publicarlo
+## Configuración inicial de Supabase
 
-Las tres actividades de `data/activities.json` son **fichas de demostración**. Incluyen texto marcado como `REEMPLAZAR` y no están listas para anunciarse a los participantes. Sustituye las instrucciones, fechas, recompensas y enlaces por información aprobada. Cambia `"demo": true` a `false` cuando la ficha esté revisada. Los enlaces de Facebook están vacíos de forma intencional.
+1. Abre el proyecto Supabase asociado a 5PACE.
+2. En SQL Editor, ejecuta el archivo `supabase/migrations/202611020001_activity_board_access.sql`.
+3. Confirma que tu usuario esté registrado en `private.admin_users`.
+4. En Authentication, crea o confirma tu usuario de acceso con email y contraseña.
+5. Comprueba que el proyecto esté activo y que las credenciales públicas del proyecto coincidan con las declaradas en `js/app.js`.
 
-## Editar una actividad
+La clave publishable incluida en el frontend es pública por diseño. Nunca incluyas una `service_role` key ni secretos de Supabase en el repositorio.
 
-1. Abre `data/activities.json` en el repositorio.
-2. Pulsa el lápiz para editar.
-3. Cambia los valores dentro de la actividad correspondiente.
-4. Conserva las comillas y comas del formato JSON. No dejes una coma después del último campo.
-5. Pulsa **Commit changes**.
-6. Espera a que GitHub Pages publique los cambios.
+## Acceso
 
-### Campos principales
+- Visitantes sin sesión: no pueden consultar las actividades.
+- Miembros aprobados: pueden leer actividades con estado `published` o `archived`.
+- Administradores: pueden leer todos los estados y crear, editar, publicar, archivar o eliminar actividades.
 
-- `id`: código único, no repetir.
-- `title`: título visible.
-- `cover_title`: título grande de la portada de la tarjeta; admite `\n` para salto de línea.
-- `category`: por ejemplo `monthly`, `free-activity`, `collaboration`, `special-event`, `editorial`.
-- `status`: `upcoming`, `open`, `closed`, `archived` o `draft`.
-- `published`, `deadline`, `updated`: fechas `YYYY-MM-DD`; usa `null` si no hay fecha.
-- `summary`, `overview`, `instructions`, `submission`, `notes`: texto de la ficha.
-- `requirements_list`, `how_to_participate`: listas de puntos.
-- `reward`: número o `null`. El diseño actual lo presenta como recompensa/unidades; ajusta el texto de la plantilla si tu sistema usa soles, puntos u otra unidad.
-- `reservation_code`: texto o `null`.
-- `facebook_url`: URL completa de la publicación, por ejemplo `https://www.facebook.com/...`.
-- `cover_style`: `cover-mystery`, `cover-music` o `cover-free`.
-- `tags`: lista de etiquetas.
-- `demo`: `true` mientras la ficha sea solo un ejemplo.
+La autorización real depende de Row Level Security (RLS) en Supabase. Ocultar controles en la interfaz no sustituye las políticas de base de datos.
 
-## Publicar en GitHub Pages (gratis)
+## Administrar actividades
 
-1. Inicia sesión en GitHub y crea un repositorio público llamado `5pace-activity-archive`.
-2. Sube **el contenido de esta carpeta**, de modo que `index.html` quede en la raíz del repositorio (no dentro de una carpeta duplicada).
-3. En el repositorio, abre **Settings → Pages**.
-4. En **Build and deployment**, elige **Deploy from a branch**.
-5. Selecciona la rama `main` y la carpeta `/(root)`, y pulsa **Save**.
-6. Espera a que termine la publicación. GitHub mostrará la URL del sitio en la sección Pages.
-7. Abre la URL, prueba el buscador, los filtros y una ficha individual desde el móvil.
+1. Entra a la página y pulsa **MEMBER LOGIN**.
+2. Inicia sesión con la cuenta administradora.
+3. La consola **ADMIN CONSOLE** aparecerá automáticamente si la cuenta figura en `private.admin_users`.
+4. Para crear una actividad, completa título, categoría y enlace de Facebook.
+5. Guarda como borrador o selecciona `published` / `archived` antes de guardar.
+6. Usa **EDIT** en una tarjeta para modificarla y **DELETE** para eliminarla.
 
-La URL habitual es `https://TU-USUARIO.github.io/5pace-activity-archive/`. Usa la URL que GitHub Pages te muestre, por si la configuración de tu cuenta difiere.
+Los enlaces de Facebook deben usar HTTPS. Las actividades en borrador no son visibles para miembros aprobados.
 
-## Importante
+## Modelo de datos
 
-- GitHub Pages publica el contenido del sitio; el repositorio público también expone el JSON. No guardes datos personales, información privada, contraseñas ni notas internas.
-- Esta versión no tiene inicio de sesión ni panel CMS. La administración actualiza los datos desde GitHub. Aunque solo administración tenga permiso de edición, cualquier persona puede leer el catálogo público.
-- Los enlaces de Facebook deben ser públicos o accesibles para los participantes.
-- Las fechas no cambian automáticamente el estado: administración debe actualizar `status` cuando abra o cierre una convocatoria.
-- Las fuentes tipográficas se cargan desde Google Fonts cuando hay conexión. Si no cargan, se usan fuentes de respaldo.
-- Para probar localmente, no abras `index.html` directamente como archivo: la carga del JSON con `fetch` puede fallar. Publícalo en GitHub Pages o usa un servidor local.
+La tabla `public.activities` utiliza los campos existentes:
+- `title`, `slug`, `category`, `status`
+- `content` JSONB, con `facebook_url`
+- `created_at`, `updated_at`
 
-## Prueba local opcional
+Estados permitidos: `draft`, `published`, `archived`.
 
-Si tienes Python instalado, abre una terminal en esta carpeta y ejecuta:
+## Publicación
 
-```bash
-python -m http.server 8000
-```
+La rama de trabajo es `feat/5pace-foundation`. No se ha fusionado con `main`. Revisa los cambios y prueba los tres perfiles antes de fusionar o publicar esta versión.
 
-Luego abre `http://localhost:8000`. Detén el servidor con `Ctrl+C`.
+## Verificación pendiente
+
+Después de ejecutar la migración en Supabase, prueba:
+1. Visitante sin iniciar sesión: no debe obtener actividades.
+2. Cuenta autenticada sin aprobación: no debe obtener actividades.
+3. Miembro aprobado: solo debe ver `published` y `archived`.
+4. Administrador: debe ver borradores y poder crear, editar, publicar, archivar y eliminar.
+
+GitHub Pages publica los archivos estáticos; no debe contener registros, enlaces internos ni información privada de actividades.
