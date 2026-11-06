@@ -94,13 +94,20 @@
   $('#reset').addEventListener('click', () => { search.value = ''; filter.value = 'all'; render(); });
 
   const viewer = $('#viewer'), body = $('#viewer-body');
+  function openViewer(title,node) {
+    viewer.classList.add('open');viewer.setAttribute('aria-hidden','false');
+    const heading=viewer.querySelector('.viewer-head span');if(heading)heading.textContent=title;
+    body.replaceChildren();if(node){const clone=node.cloneNode(true);clone.querySelectorAll('button').forEach(b=>b.remove());clone.hidden=false;body.append(clone);}
+  }
   function openMagazine() {
-    viewer.classList.add('open'); viewer.setAttribute('aria-hidden','false'); const url = window.HEYZINE_URL || '';
+    viewer.classList.add('open'); viewer.setAttribute('aria-hidden','false'); const heading=viewer.querySelector('.viewer-head span');if(heading)heading.textContent='THE MAGAZINE / HEYZINE VIEWER'; const url = window.HEYZINE_URL || '';
     if (url && /^https:\/\//.test(url)) { body.innerHTML = ''; const frame = document.createElement('iframe'); frame.src = url; frame.title = 'The Magazine — Heyzine flipbook'; frame.allow = 'fullscreen'; frame.allowFullscreen = true; body.append(frame); }
     else body.innerHTML = '<p>No se ha configurado el enlace de la revista.</p>';
   }
   $('#open-magazine').addEventListener('click', openMagazine); $('#open-magazine-text').addEventListener('click', openMagazine);
-  $('#close-viewer').addEventListener('click', () => { viewer.classList.remove('open'); viewer.setAttribute('aria-hidden','true'); body.innerHTML = ''; });
+  $('#about-open')?.addEventListener('click',()=>openViewer('ABOUT / 5PACE',document.querySelector('#about')));
+  document.addEventListener('click',e=>{const button=e.target.closest('[data-open-custom]');if(!button)return;const section=document.querySelector('[data-custom-section="'+CSS.escape(button.dataset.openCustom)+'"]');if(section)openViewer((section.querySelector('h2')?.textContent||'5PACE SECTION')+' / 5PACE',section);});
+  $('#close-viewer').addEventListener('click', () => { viewer.classList.remove('open'); viewer.setAttribute('aria-hidden','true'); body.innerHTML = '';const heading=viewer.querySelector('.viewer-head span');if(heading)heading.textContent='THE MAGAZINE / HEYZINE VIEWER'; });
   viewer.addEventListener('click', e => { if (e.target === viewer) $('#close-viewer').click(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') $('#close-viewer').click(); });
   $('.menu-toggle').addEventListener('click', () => $('.nav').classList.toggle('nav-open'));
