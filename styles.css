@@ -533,3 +533,22 @@ details[open]>summary .pb-collapse-indicator{transform:rotate(45deg)}
   letter-spacing:.02em;
 }
 .pb-custom[open]>.pb-custom-content{border-top:1px solid var(--line)}
+
+/* MEMBER REGISTRATION AND ADMIN APPROVALS */
+.member-register{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:10px 0 0;width:100%;border-top:1px solid #d5d1ca;margin-top:10px}
+.member-register>span{grid-column:1/-1;color:var(--red);font:9px var(--mono);letter-spacing:.06em}
+.member-register input{height:34px;min-width:0;border:1px solid var(--line);background:#fbfaf7;padding:0 9px;color:var(--ink);font:10px var(--mono)}
+.member-register button{grid-column:1/-1;height:34px;border:1px solid var(--red);background:var(--red);color:#fff;padding:0 12px;font:9px var(--mono);cursor:pointer}
+.member-register button:disabled{opacity:.5}
+.member-requests{border:1px solid var(--line);padding:10px;margin:0 0 14px;background:#fff}
+.member-requests-head{display:flex;justify-content:space-between;align-items:center;gap:8px;font:9px var(--mono);margin-bottom:8px}
+.member-requests-head strong{color:var(--red)}
+.member-requests-head button,.member-request-actions button{border:1px solid var(--line);background:transparent;padding:6px 8px;font:8px var(--mono);cursor:pointer}
+.member-request-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-top:1px solid #ddd}
+.member-request-row>div:first-child{display:flex;flex-direction:column;min-width:0;overflow-wrap:anywhere}
+.member-request-row strong{font:700 12px var(--display)}
+.member-request-row span,.member-request-row small{font:8px var(--mono);color:#666}
+.member-request-actions{display:flex;gap:5px;flex-shrink:0}
+.member-request-actions button[data-member-status="approved"]{border-color:#367c4c;color:#367c4c}
+.member-request-actions button[data-member-status="rejected"]{border-color:var(--red);color:var(--red)}
+@media(max-width:480px){.member-register{grid-template-columns:1fr}.member-request-row{align-items:flex-start;flex-direction:column}}
