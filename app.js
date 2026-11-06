@@ -28,6 +28,8 @@
     }).join('') || `<p class="empty-state">${state.user ? 'No hay actividades disponibles para esta cuenta.' : 'Inicia sesión para acceder al Activity Board.'}</p>`;
     $('#result-count').textContent = String(rows.length).padStart(2, '0') + ' ACTIVIDADES';
     $('#admin-panel').hidden = !state.isAdmin;
+    $('#admin-open').hidden = !state.isAdmin || !$('#admin-panel').hidden;
+    document.body.classList.toggle('admin-mode', state.isAdmin && !$('#admin-panel').hidden);
     if (state.isAdmin) wireRowActions();
   }
   function wireRowActions() {
@@ -100,6 +102,17 @@
   viewer.addEventListener('click', e => { if (e.target === viewer) $('#close-viewer').click(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') $('#close-viewer').click(); });
   $('.menu-toggle').addEventListener('click', () => $('.nav').classList.toggle('nav-open'));
+  $('#admin-close').addEventListener('click', () => {
+    $('#admin-panel').hidden = true;
+    $('#admin-open').hidden = false;
+    document.body.classList.remove('admin-mode');
+  });
+  $('#admin-open').addEventListener('click', () => {
+    if (!state.isAdmin) return;
+    $('#admin-panel').hidden = false;
+    $('#admin-open').hidden = true;
+    document.body.classList.add('admin-mode');
+  });
   if (db) { db.auth.onAuthStateChange(() => { setTimeout(refreshSession, 0); }); refreshSession(); }
   else { setMessage('No se pudo cargar Supabase. Revisa la conexión.'); render(); }
 })();
