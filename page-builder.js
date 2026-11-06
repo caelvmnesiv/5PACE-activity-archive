@@ -36,8 +36,10 @@
       const el = document.querySelector(s.selector), cfg = state.config.sections[s.id] || {};
       if (el) { el.hidden = cfg.visible === false; el.style.order = String(Number(cfg.order) || 1); }
     });
-    document.querySelector('.panels')?.style.setProperty('display','grid');
+    const main = document.querySelector('#home');
+    if (main) { main.style.display = 'flex'; main.style.flexDirection = 'column'; }
     const panels = document.querySelector('.panels');
+    if (panels) panels.style.order = '2';
     if (panels) {
       panels.style.display = 'grid';
       ['magazine','activity-board'].forEach(id => {
@@ -101,11 +103,14 @@
   async function save(publish) {
     message('Guardando…');
     const key=publish?'published':'draft';
-    const payload = publish
-      ? {id:1,config:state.config,draft_config:state.config,updated_at:new Date().toISOString()}
-      : {id:1,draft_config:state.config,updated_at:new Date().toISOString()};
-    const {error}=await db.from('page_settings').upsert(payload);
-    if(error){message('Error: '+error.message);return;}
+    let result;
+    if (publish) {
+      result = await db.from('page_settings').upsert({id:1,config:state.config,updated_at:new Date().toISOString()});
+      if (!result.error) await db.from('page_settings_drafts').upsert({id:1,config:state.config,updated_at:new Date().toISOString()});
+    } else {
+      result = await db.from('page_settings_drafts').upsert({id:1,config:state.config,updated_at:new Date().toISOString()});
+    }
+    if(result.error){message('Error: '+result.error.message);return;}
     message(publish?'Cambios publicados.':'Borrador guardado.');
   }
   async function uploadImage(e) {
@@ -125,13 +130,15 @@
     e.target.value='';
   }
   async function init() {
-    const {data,error}=await db.from('page_settings').select('config,draft_config').eq('id',1).maybeSingle();
+    const {data,error}=await db.from('page_settings').select('config').eq('id',1).maybeSingle();
     if(error){console.warn('5PACE page settings:',error.message);return;}
     const {data:{session}}=await db.auth.getSession();
     let isAdmin=false;
     if(session?.user){const {data:admin,error:adminError}=await db.rpc('is_admin');isAdmin=!adminError&&admin===true;}
     state.isAdmin=isAdmin;
-    state.config=mergeConfig(isAdmin ? (data?.draft_config || data?.config) : data?.config);
+    let draftConfig=null;
+    if(isAdmin){const draft=await db.from('page_settings_drafts').select('config').eq('id',1).maybeSingle();if(!draft.error)draftConfig=draft.data?.config;}
+    state.config=mergeConfig(isAdmin ? (draftConfig || data?.config) : data?.config);
     applyConfig();
     if(!isAdmin)return;
     render();
