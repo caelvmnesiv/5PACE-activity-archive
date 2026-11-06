@@ -81,10 +81,11 @@
   }
   function renderSectionRows(){
     const items=[
-      ...sectionDefs.map(s=>({id:s.id,label:s.label,order:Number(state.config.sections[s.id]?.order)||1,custom:false})),
+      ...sectionDefs.filter(s=>s.group!=='panels').map(s=>({id:s.id,label:s.label,order:Number(state.config.sections[s.id]?.order)||1,custom:false})),
       ...state.config.customSections.map(s=>({id:s.id,label:s.title||'NEW SECTION',order:Number(s.order)||sectionDefs.length+1,custom:true,visible:s.visible!==false}))
     ].sort((a,b)=>a.order-b.order);
-    return items.map(item=>{
+    const fixedPair='<div class="pb-section pb-section-fixed"><span class="pb-section-name">THE MAGAZINE + ACTIVITY BOARD</span><span class="pb-state">FIXED · TWO COLUMNS</span></div>';
+    return fixedPair+items.map(item=>{
       if(!item.custom){const cfg=state.config.sections[item.id]||{},vis=cfg.visible!==false;return '<div class="pb-section" draggable="true" data-sort-id="'+item.id+'"><span class="pb-grip">⠿</span><span class="pb-section-name">'+item.label+'</span><span class="pb-state">'+(vis?'VISIBLE':'HIDDEN')+'</span><button type="button" data-toggle="'+item.id+'">'+(vis?'HIDE':'SHOW')+'</button></div>';}
       const s=state.config.customSections.find(x=>x.id===item.id);
       return '<div class="pb-section" draggable="true" data-sort-id="'+safe(s.id)+'"><span class="pb-grip">⠿</span><span class="pb-section-name">'+safe(s.title||'NEW SECTION')+'</span><span class="pb-state">'+(s.visible===false?'HIDDEN':'CUSTOM')+'</span><button type="button" data-custom-toggle="'+safe(s.id)+'">'+(s.visible===false?'SHOW':'HIDE')+'</button><button type="button" data-remove-section="'+safe(s.id)+'">DELETE</button></div>';
