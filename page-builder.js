@@ -88,7 +88,7 @@
       if(member.role){const role=document.createElement('span');role.className='user-team-role';role.textContent=member.role;info.appendChild(role);}
       const name=document.createElement('h3');name.textContent=member.name||'TEAM MEMBER';info.appendChild(name);
       if(member.description){const desc=document.createElement('p');desc.textContent=member.description;info.appendChild(desc);}
-      if(member.url&&/^https?:\\/\\//i.test(member.url)){const link=document.createElement('a');link.href=member.url;link.target='_blank';link.rel='noopener noreferrer';link.textContent='MORE ↗';info.appendChild(link);}
+      if(member.url&&member.url.indexOf('http')===0){const link=document.createElement('a');link.href=member.url;link.target='_blank';link.rel='noopener noreferrer';link.textContent='MORE ↗';info.appendChild(link);}
       article.appendChild(info);grid.appendChild(article);
     });
   }
