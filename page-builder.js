@@ -3,7 +3,7 @@
   if (!root || !window.supabase || !window.SUPABASE_URL || !window.SUPABASE_ANON_KEY) return;
   const db = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
   const $ = (s, scope=document) => scope.querySelector(s);
-  const state = { config:null, isAdmin:false, dragId:null, preview:false, activeTab:'content' };
+  const state = { config:null, isAdmin:false, dragId:null, preview:false, activeTab:'content', accordionState:new Map() };
   const sectionDefs = [
     {id:'hero',label:'HERO / PORTADA',selector:'.hero',group:'main'},
     {id:'magazine',label:'THE MAGAZINE',selector:'#magazine',group:'panels'},
@@ -131,17 +131,19 @@
     return state.config.customSections.map((s)=>' <details class="pb-custom" data-accordion-key="custom-'+safe(s.id)+'" data-editor-section="'+safe(s.id)+'"><summary class="pb-custom-head"><strong>'+safe(s.title||'NEW SECTION')+'</strong></summary><div class="pb-custom-content"><button type="button" data-remove-section="'+safe(s.id)+'">REMOVE SECTION ×</button><label>Section title<input data-section-title="'+safe(s.id)+'" value="'+safe(s.title||'')+'"></label><div class="pb-inline-fields"><label>Background<input type="color" data-section-style="background" data-id="'+safe(s.id)+'" value="'+safe(s.background||'#fbfaf7')+'"></label><label>Text color<input type="color" data-section-style="color" data-id="'+safe(s.id)+'" value="'+safe(s.color||'#090909')+'"></label><label>Padding (px)<input type="number" min="0" max="160" data-section-style="padding" data-id="'+safe(s.id)+'" value="'+(Number(s.padding)||24)+'"></label></div><div class="pb-blocks">'+(s.blocks||[]).map((b,j)=>{if(b.type==='team-grid'){const items=b.items||[];return '<details class="pb-block pb-team-block" data-accordion-key="team-grid-'+safe(b._editorId||s.id+'-'+j)+'" open><summary><strong>TEAM CARDS · '+items.length+'</strong><span class="pb-team-columns-note">FIXED GRID · 4 COLUMNS</span><span class="pb-collapse-indicator">＋</span></summary><div class="pb-team-grid-edit">'+items.map((c,k)=>'<details class="pb-team-card-editor" data-accordion-key="team-card-'+safe(c._editorId||s.id+'-'+j+'-'+k)+'"><summary><strong>CARD '+(k+1)+'</strong><span class="pb-collapse-indicator">＋</span></summary><div class="pb-team-card-fields"><label>PHOTO URL<input data-team-prop="image" data-section-id="'+safe(s.id)+'" data-index="'+j+'" data-card-index="'+k+'" value="'+safe(c.image||'')+'"></label><label>UPLOAD PHOTO<input type="file" data-team-file data-section-id="'+safe(s.id)+'" data-index="'+j+'" data-card-index="'+k+'" accept="image/*"></label><label>NAME<input data-team-prop="name" data-section-id="'+safe(s.id)+'" data-index="'+j+'" data-card-index="'+k+'" value="'+safe(c.name||'')+'"></label><label>ROLE<input data-team-prop="role" data-section-id="'+safe(s.id)+'" data-index="'+j+'" data-card-index="'+k+'" value="'+safe(c.role||'')+'"></label><label>DESCRIPTION<textarea data-team-prop="description" data-section-id="'+safe(s.id)+'" data-index="'+j+'" data-card-index="'+k+'">'+safe(c.description||'')+'</textarea></label><label>LINK<input data-team-prop="url" data-section-id="'+safe(s.id)+'" data-index="'+j+'" data-card-index="'+k+'" value="'+safe(c.url||'')+'"></label><div><button type="button" data-team-move="-1" data-section-id="'+safe(s.id)+'" data-index="'+j+'" data-card-index="'+k+'" '+(k===0?'disabled':'')+'>↑</button><button type="button" data-team-move="1" data-section-id="'+safe(s.id)+'" data-index="'+j+'" data-card-index="'+k+'" '+(k===items.length-1?'disabled':'')+'>↓</button><button type="button" data-team-remove="'+safe(s.id)+'" data-index="'+j+'" data-card-index="'+k+'">REMOVE</button></div></div></details>').join('')+'<button type="button" data-team-add="'+safe(s.id)+'" data-index="'+j+'">+ ADD MEMBER</button><button type="button" data-remove-block="'+safe(s.id)+'" data-index="'+j+'">REMOVE MEMBER LIST</button></div></details>';}const fields=b.type==='image'?'<label>IMAGE URL<input data-block-prop="src" data-section-id="'+safe(s.id)+'" data-index="'+j+'" value="'+safe(b.src||'')+'" placeholder="https://..."></label><label>ALT TEXT<input data-block-prop="alt" data-section-id="'+safe(s.id)+'" data-index="'+j+'" value="'+safe(b.alt||'')+'"></label><label>IMAGE LINK (OPTIONAL)<input data-block-prop="url" data-section-id="'+safe(s.id)+'" data-index="'+j+'" value="'+safe(b.url||'')+'" placeholder="https://..."></label><label>UPLOAD IMAGE<input type="file" data-block-file data-section-id="'+safe(s.id)+'" data-index="'+j+'" accept="image/png,image/jpeg,image/webp,image/gif,image/avif"></label>':b.type==='button'?'<label>BUTTON TEXT<input data-block-prop="text" data-section-id="'+safe(s.id)+'" data-index="'+j+'" value="'+safe(b.text||'OPEN')+'"></label><label>BUTTON LINK<input data-block-prop="url" data-section-id="'+safe(s.id)+'" data-index="'+j+'" value="'+safe(b.url||'')+'" placeholder="https://..."></label>':b.type==='divider'||b.type==='spacer'?'<span>'+safe(b.type.toUpperCase())+'</span>':'<label>TEXT / HEADING<textarea data-block-text="'+safe(s.id)+'" data-index="'+j+'" rows="2">'+safe(b.text||'')+'</textarea></label><label>LINK URL (OPTIONAL)<input data-block-prop="url" data-section-id="'+safe(s.id)+'" data-index="'+j+'" value="'+safe(b.url||'')+'" placeholder="https://..."></label>';return '<div class="pb-block" data-block="'+j+'"><span>'+safe(b.type.toUpperCase())+'</span><div class="pb-block-fields">'+fields+'</div><button type="button" data-remove-block="'+safe(s.id)+'" data-index="'+j+'">×</button></div>';}).join('')+'</div><div class="pb-add-blocks pb-team-only"><button type="button" data-add-block="team-grid" data-id="'+safe(s.id)+'" '+((s.blocks||[]).some(b=>b.type==="team-grid")?'disabled':'')+'>+ ADD MEMBERS</button></div></div></details>').join('');
   }
   function captureAccordionState(){
-    const snapshot=new Map();
+    // Refresh the persistent map from the live editor before rebuilding its DOM.
     root.querySelectorAll('details[data-accordion-key]').forEach(details=>{
-      snapshot.set(details.dataset.accordionKey,details.open);
+      state.accordionState.set(details.dataset.accordionKey,details.open);
     });
-    return snapshot;
+    return new Map(state.accordionState);
   }
   function restoreAccordionState(snapshot){
+    // Keep keys for temporarily removed cards; their identity must not shift by index.
+    state.accordionState=new Map(snapshot);
     root.querySelectorAll('details[data-accordion-key]').forEach(details=>{
-      if(snapshot.has(details.dataset.accordionKey)){
-        details.open=snapshot.get(details.dataset.accordionKey);
-      }
+      const key=details.dataset.accordionKey;
+      if(state.accordionState.has(key))details.open=state.accordionState.get(key);
+      else state.accordionState.set(key,details.open);
     });
   }
   function render(){
@@ -159,6 +161,10 @@
   }
   function message(s){const el=$('#pb-message');if(el)el.textContent=s;}
   function bind(){
+    // Track native disclosure changes immediately, not only when a render happens.
+    root.querySelectorAll('details[data-accordion-key]').forEach(details=>details.addEventListener('toggle',()=>{
+      state.accordionState.set(details.dataset.accordionKey,details.open);
+    }));
     root.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{state.activeTab=btn.dataset.tab;root.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===btn));root.querySelectorAll('[data-panel]').forEach(x=>x.hidden=x.dataset.panel!==state.activeTab);}));
     root.querySelectorAll('[data-copy]').forEach(el=>el.addEventListener('input',()=>{state.config.copy[el.dataset.copy]=el.value;applyConfig();}));
     root.querySelectorAll('[data-nav-visible]').forEach(el=>el.addEventListener('change',()=>{state.config.navVisibility[el.dataset.navVisible]=el.checked;applyConfig();}));
