@@ -4,12 +4,27 @@
 create table if not exists public.page_settings (
   id integer primary key check (id = 1),
   config jsonb not null default '{}'::jsonb,
-  draft_config jsonb,
   updated_at timestamptz not null default now(),
   updated_by uuid references auth.users(id)
 );
 
 alter table public.page_settings enable row level security;
+create table if not exists public.page_settings_drafts (
+  id integer primary key check (id = 1),
+  config jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now(),
+  updated_by uuid references auth.users(id)
+);
+
+alter table public.page_settings_drafts enable row level security;
+drop policy if exists "Admins manage page settings drafts" on public.page_settings_drafts;
+create policy "Admins manage page settings drafts"
+on public.page_settings_drafts for all
+to authenticated
+using (private.is_admin())
+with check (private.is_admin());
+grant select, insert, update, delete on public.page_settings_drafts to authenticated;
+
 
 drop policy if exists "Page settings are publicly readable" on public.page_settings;
 create policy "Page settings are publicly readable"
@@ -46,7 +61,6 @@ values (1, jsonb_build_object(
 ))
 on conflict (id) do nothing;
 
-update public.page_settings set draft_config = config where id = 1 and draft_config is null;
 
 -- The frontend already calls db.rpc('is_admin'). Expose a safe wrapper
 -- around the existing private function so the browser can check its own role.
