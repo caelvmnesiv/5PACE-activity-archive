@@ -239,3 +239,7 @@ body.admin-mode{
 .viewer.popup-window .viewer-body{width:min(760px,calc(100vw - 36px));max-height:calc(100vh - 90px);margin:54px auto 36px;padding:clamp(18px,4vw,40px);overflow:auto;background:var(--paper);color:var(--ink);border:1px solid var(--line)}
 .viewer.popup-window .viewer-body>.user-section{width:100%;min-height:0;max-height:none;overflow:visible;padding:0;border:0;background:transparent}
 @media(max-width:650px){.pb-section-custom{grid-template-columns:16px minmax(0,1fr) minmax(95px,115px);}.pb-section-custom .pb-state{display:none}.pb-section-custom button{grid-row:2}.viewer.popup-window .viewer-body{width:calc(100vw - 24px);max-height:calc(100dvh - 76px);margin-top:50px}}
+
+.pb-nav-inline{display:flex;align-items:center;gap:4px;font:8px var(--mono);white-space:nowrap}.pb-nav-inline input{width:13px;height:13px}
+.pb-section-custom{grid-template-columns:18px minmax(90px,1fr) minmax(100px,130px) auto auto auto auto}
+@media(max-width:650px){.pb-section-custom{grid-template-columns:16px minmax(0,1fr) minmax(95px,115px) auto}.pb-section-custom .pb-state{display:none}}
