@@ -2,7 +2,7 @@
   const $ = (s) => document.querySelector(s);
   const list = $('#activity-list'), search = $('#search'), filter = $('#filter');
   const icons = ['▦','✳','△','□','●','▦','✳','✦','＋'];
-  const state = { activities: [], isAdmin: false, user: null, adminPanelOpen: false };
+  const state = { activities: [], isAdmin: false, user: null, adminPanelOpen: false, viewAsMember: false, recoveryMode: false };
   const configured = window.supabase && window.SUPABASE_URL && window.SUPABASE_ANON_KEY;
   const db = configured ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY) : null;
   const escapeHtml = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -18,12 +18,12 @@
   }
   function render() {
     const q = search.value.trim().toLowerCase(), type = filter.value;
-    const rows = state.activities.filter(a => (!q || `${a.title} ${a.category || ''}`.toLowerCase().includes(q)) && (type === 'all' || type === a.category));
+    const visibleActivities = state.viewAsMember ? state.activities.filter(a => a.status === 'published') : state.activities;\n    const rows = visibleActivities.filter(a => (!q || `${a.title} ${a.category || ''}`.toLowerCase().includes(q)) && (type === 'all' || type === a.category));
     list.innerHTML = rows.map((a, i) => {
       const url = a.content?.facebook_url || '';
       const tag = url ? 'a' : 'div';
       const href = url ? `href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer"` : '';
-      const edit = state.isAdmin ? `<button class="edit-activity" type="button" data-edit="${escapeHtml(a.id)}">EDIT</button><button class="delete-activity" type="button" data-delete="${escapeHtml(a.id)}">×</button>` : '';
+      const edit = state.isAdmin && !state.viewAsMember ? `<button class="edit-activity" type="button" data-edit="${escapeHtml(a.id)}">EDIT</button><button class="delete-activity" type="button" data-delete="${escapeHtml(a.id)}">×</button>` : '';
       return `<${tag} class="activity-row" ${href}><span class="activity-symbol">${icons[i % icons.length]}</span><span class="activity-title">${escapeHtml(a.title)}</span><span class="type-pill">${escapeHtml(a.category || 'Activity')}</span><span class="activity-arrow">${url ? '→' : '—'}</span>${edit}</${tag}>`;
     }).join('') || `<p class="empty-state">${state.user ? 'No hay actividades disponibles para esta cuenta.' : 'Inicia sesión para acceder al Activity Board.'}</p>`;
     $('#result-count').textContent = String(rows.length).padStart(2, '0') + ' ACTIVIDADES';
@@ -84,6 +84,38 @@
   $('#login-method').addEventListener('change', () => syncAuthMethod('login'));
   $('#register-method').addEventListener('change', () => { syncAuthMethod('register'); $('#register-otp-wrap').hidden = true; $('#register-button').hidden = false; });
   syncAuthMethod('login'); syncAuthMethod('register');
+  $('#forgot-password-button').addEventListener('click', () => {
+    const email = $('#login-method').value === 'email' ? $('#login-identifier').value.trim() : '';
+    $('#password-recovery').hidden = false;
+    $('#recovery-email').value = email;
+    $('#recovery-instructions').textContent = 'Introduce el correo asociado a tu cuenta para recibir un enlace seguro.';
+    $('#new-password-fields').hidden = true;
+  });
+  $('#cancel-recovery-button').addEventListener('click', () => { $('#password-recovery').hidden = true; });
+  $('#send-recovery-button').addEventListener('click', async () => {
+    const email = $('#recovery-email').value.trim();
+    if (!email) return setMessage('Introduce el correo de tu cuenta administrativa.');
+    const button = $('#send-recovery-button'); button.disabled = true;
+    const redirectTo = window.location.origin + window.location.pathname;
+    const { error } = await db.auth.resetPasswordForEmail(email, { redirectTo });
+    button.disabled = false;
+    if (error) return setMessage('No se pudo enviar el enlace: ' + error.message);
+    $('#recovery-instructions').textContent = 'Si el correo está registrado, recibirás un enlace. Ábrelo desde este mismo sitio para establecer tu contraseña.';
+    setMessage('Solicitud de recuperación enviada. Revisa tu correo.');
+  });
+  $('#save-new-password-button').addEventListener('click', async () => {
+    const password = $('#new-password').value, confirm = $('#new-password-confirm').value;
+    if (password.length < 8) return setMessage('La contraseña debe tener al menos 8 caracteres.');
+    if (password !== confirm) return setMessage('Las contraseñas no coinciden.');
+    const button = $('#save-new-password-button'); button.disabled = true;
+    const { error } = await db.auth.updateUser({ password });
+    button.disabled = false;
+    if (error) return setMessage('No se pudo actualizar la contraseña: ' + error.message);
+    $('#password-recovery').hidden = true;
+    $('#new-password').value = ''; $('#new-password-confirm').value = '';
+    setMessage('Contraseña actualizada. Ya puedes iniciar sesión con ella.');
+    await refreshSession();
+  });
   $('#login-button').addEventListener('click', async () => {
     const method = $('#login-method').value, identifier = $('#login-identifier').value.trim(), password = $('#login-password').value;
     if (!identifier || !password) return setMessage('Introduce tu correo o teléfono y tu contraseña.');
@@ -146,6 +178,14 @@
     await loadMemberRequests(); setMessage(button.dataset.memberStatus === 'approved' ? 'Miembro aprobado. Ya puede acceder cuando inicie sesión.' : 'Solicitud rechazada.');
   });
 
+  $('#view-as-member-button').addEventListener('click', () => {
+    if (!state.isAdmin) return;
+    state.viewAsMember = !state.viewAsMember;
+    state.adminPanelOpen = !state.viewAsMember;
+    if (state.viewAsMember) { $('#admin-panel').hidden = true; $('#admin-open').hidden = true; }
+    else { $('#admin-panel').hidden = false; $('#admin-open').hidden = true; }
+    render();
+  });
   $('#logout-button').addEventListener('click', async () => { await db.auth.signOut(); state.user = null; state.isAdmin = false; await refreshSession(); });
   $('#activity-form').addEventListener('submit', async e => {
     e.preventDefault(); if (!state.isAdmin) return;
@@ -193,6 +233,21 @@
     $('#admin-open').hidden = true;
     document.body.classList.add('admin-mode');
   });
-  if (db) { db.auth.onAuthStateChange(() => { setTimeout(refreshSession, 0); }); refreshSession(); }
+  if (db) {
+    db.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        state.recoveryMode = true;
+        $('#login-controls').hidden = true; $('#register-controls').hidden = true;
+        $('#password-recovery').hidden = false;
+        $('#recovery-email').hidden = true;
+        $('#send-recovery-button').hidden = true;
+        $('#recovery-instructions').textContent = 'Enlace validado. Crea una contraseña nueva para tu cuenta.';
+        $('#new-password-fields').hidden = false;
+        setMessage('Establece tu nueva contraseña.');
+      }
+      setTimeout(refreshSession, 0);
+    });
+    refreshSession();
+  }
   else { setMessage('No se pudo cargar Supabase. Revisa la conexión.'); render(); }
 })();
