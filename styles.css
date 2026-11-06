@@ -106,3 +106,18 @@ body.admin-mode{padding-right:min(520px,44vw)}
   .admin-shell-content #activity-form{grid-template-columns:1fr}
   .admin-shell-content #activity-title,.admin-shell-content #activity-url,.admin-shell-content .admin-actions{grid-column:auto}
 }
+
+/* 5PACE section tabs, drag ordering and inline text links */
+.wordmark{display:none!important}
+#home>.panels{display:contents!important}
+#custom-sections{display:contents!important}
+.user-section-open,.section-open-button{display:inline-block;margin-top:12px;padding:9px 12px;border:1px solid currentColor;background:transparent;color:inherit;font:9px var(--mono);letter-spacing:.04em;cursor:pointer}
+.user-section-open:hover,.section-open-button:hover{background:var(--ink);color:var(--white)}
+#viewer .viewer-body>.about,#viewer .viewer-body>.user-section{display:block;width:min(1100px,100%);max-height:100%;overflow:auto;padding:clamp(20px,4vw,54px);background:var(--paper);color:var(--ink);border:1px solid var(--line)}
+#viewer .viewer-body>.user-section{min-height:55vh}
+#viewer .viewer-body>.user-section .user-section-open{display:none}
+.pb-section[draggable=true]{cursor:grab}.pb-section[draggable=true]:active{cursor:grabbing}
+.pb-custom .pb-viewer-toggle{display:flex;align-items:center;gap:8px;margin:10px 0;font:9px var(--mono)}
+.pb-custom .pb-viewer-toggle input{width:16px;height:16px}
+.pb-copy-field input[data-link-text],.pb-copy-field input[data-link-url]{width:100%;min-width:0;height:32px;border:1px solid var(--line);background:#fff;padding:7px;color:var(--ink);font:10px var(--sans)}
+.pb-copy-field a{color:var(--red)}
