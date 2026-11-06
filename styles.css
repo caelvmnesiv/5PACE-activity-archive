@@ -391,3 +391,47 @@ body.admin-mode #viewer .viewer-body>.user-section h2{
   body.admin-mode #viewer{right:0!important;width:100vw!important;max-width:100vw!important}
   body.admin-mode #viewer .viewer-body>.user-section{width:100%!important}
 }
+
+
+/* CUSTOM POP-UP — grow with its content, while keeping a viewport-safe scroll limit */
+.viewer.popup-window{
+  grid-template-rows:auto!important;
+  align-content:center!important;
+  justify-items:center!important;
+  overflow-y:auto!important;
+  padding:58px 24px 24px!important;
+}
+.viewer.popup-window .viewer-body{
+  display:block!important;
+  width:min(1080px,calc(100vw - 48px))!important;
+  height:auto!important;
+  max-height:calc(100dvh - 90px)!important;
+  min-height:0!important;
+  margin:0 auto!important;
+  padding:clamp(18px,3vw,36px)!important;
+  overflow:auto!important;
+  align-self:center!important;
+}
+.viewer.popup-window .viewer-body>.user-section{
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  overflow:visible!important;
+  padding:0!important;
+}
+.viewer.popup-window .user-team-grid{
+  display:grid!important;
+  width:100%!important;
+  max-width:none!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:12px!important;
+  align-items:stretch!important;
+}
+.viewer.popup-window .user-team-card{min-width:0!important;width:100%!important}
+@media(max-width:700px){
+  .viewer.popup-window{padding:52px 12px 12px!important}
+  .viewer.popup-window .viewer-body{width:100%!important;max-height:calc(100dvh - 68px)!important;padding:16px!important}
+  .viewer.popup-window .user-team-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
