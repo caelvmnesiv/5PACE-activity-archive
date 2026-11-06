@@ -136,11 +136,11 @@
       const member=state.config.teamMembers[Number(el.dataset.memberIndex)];
       if(member){member[el.dataset.teamProp]=el.value;applyConfig();}
     }));
-    root.querySelectorAll('[data-team-add]').forEach(el=>el.addEventListener('click',()=>{
+    root.querySelectorAll('[data-team-add]').forEach(el=>{if(el.dataset.bound==='true')return;el.dataset.bound='true';el.addEventListener('click',()=>{
       state.config.teamMembers.push({_editorId:'member-'+Math.random().toString(36).slice(2,10),name:'TEAM MEMBER',role:'ROLE',description:'',image:'',url:''});
       refreshCustomEditorList();
       const roster=root.querySelector('.pb-our-team');if(roster)roster.open=true;
-    }));
+    });});
     root.querySelectorAll('[data-team-remove]').forEach(el=>el.addEventListener('click',()=>{
       state.config.teamMembers.splice(Number(el.dataset.teamRemove),1);
       refreshCustomEditorList();applyConfig();
