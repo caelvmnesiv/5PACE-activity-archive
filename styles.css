@@ -121,3 +121,6 @@ body.admin-mode{padding-right:min(520px,44vw)}
 .pb-custom .pb-viewer-toggle input{width:16px;height:16px}
 .pb-copy-field input[data-link-text],.pb-copy-field input[data-link-url]{width:100%;min-width:0;height:32px;border:1px solid var(--line);background:#fff;padding:7px;color:var(--ink);font:10px var(--sans)}
 .pb-copy-field a{color:var(--red)}
+
+.user-section[data-open-in-viewer=true] > :not(h2):not(.user-section-open){display:none}
+#viewer .viewer-body>.user-section[data-open-in-viewer=false] > *{display:revert}
