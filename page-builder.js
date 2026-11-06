@@ -34,7 +34,7 @@
     if (t.bodyFont) style.setProperty('--sans', "'" + t.bodyFont.replace(/[';]/g,'') + "', Arial, sans-serif");
     sectionDefs.forEach(s => {
       const el = document.querySelector(s.selector), cfg = state.config.sections[s.id] || {};
-      if (el) { el.hidden = cfg.visible === false; el.style.order = String(Number(cfg.order) || 1); }
+      if (el) { el.hidden = cfg.visible === false; el.style.order = s.group === 'main' ? String((Number(cfg.order) || 1) + (Number(cfg.order) > 1 ? 1 : 0)) : String(Number(cfg.order) || 1); }
     });
     const main = document.querySelector('#home');
     if (main) { main.style.display = 'flex'; main.style.flexDirection = 'column'; }
@@ -144,4 +144,5 @@
     render();
   }
   init();
+  db.auth.onAuthStateChange((_event, session) => { if (session?.user) init(); else { state.isAdmin=false; root.innerHTML=''; } });
 })();
