@@ -426,13 +426,15 @@ body.admin-mode #viewer .viewer-body>.user-section h2{
 .viewer.popup-window .user-team-grid{
   display:grid!important;
   width:100%!important;
-  max-width:none!important;
-  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  max-width:900px!important;
+  margin:16px auto!important;
+  grid-template-columns:repeat(3,minmax(0,260px))!important;
+  justify-content:center!important;
   gap:12px!important;
   align-items:stretch!important;
 }
 .viewer.popup-window .user-team-card{min-width:0!important;width:100%!important}
-@media(max-width:700px){
+@media(max-width:850px){
   .viewer.popup-window{padding:52px 12px 12px!important}
   .viewer.popup-window .viewer-body{width:100%!important;max-height:calc(100dvh - 68px)!important;padding:16px!important}
   .viewer.popup-window .user-team-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
