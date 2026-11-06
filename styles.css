@@ -496,3 +496,40 @@ details[open]>summary .pb-collapse-indicator{transform:rotate(45deg)}
 .pb-team-card-fields>label:nth-of-type(5){grid-column:1/-1}
 .pb-team-card-fields>div{grid-column:1/-1}
 @media(max-width:480px){.pb-team-card-fields{grid-template-columns:1fr}}
+
+
+/* CUSTOM SECTIONS — same +/- accordion behavior as fixed content groups */
+.pb-custom{
+  border:1px solid var(--line)!important;
+  background:#f7f5f0!important;
+  margin:0 0 9px!important;
+  padding:0!important;
+  overflow:hidden!important;
+}
+.pb-custom>summary.pb-custom-head{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  gap:3px 12px!important;
+  align-items:center!important;
+  padding:11px 13px!important;
+  cursor:pointer!important;
+  list-style:none!important;
+  background:#f7f5f0!important;
+  border:0!important;
+  margin:0!important;
+}
+.pb-custom>summary.pb-custom-head::-webkit-details-marker{display:none!important}
+.pb-custom>summary.pb-custom-head::marker{content:""!important}
+.pb-custom>summary.pb-custom-head::after{
+  content:"+";
+  grid-column:2;
+  grid-row:1;
+  font:18px var(--mono);
+  color:var(--red);
+}
+.pb-custom[open]>summary.pb-custom-head::after{content:"−"}
+.pb-custom>summary.pb-custom-head strong{
+  font:700 16px var(--display)!important;
+  letter-spacing:.02em;
+}
+.pb-custom[open]>.pb-custom-content{border-top:1px solid var(--line)}
