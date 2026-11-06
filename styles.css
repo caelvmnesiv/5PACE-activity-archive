@@ -124,3 +124,10 @@ body.admin-mode{padding-right:min(520px,44vw)}
 
 .user-section[data-open-in-viewer=true] > :not(h2):not(.user-section-open){display:none}
 #viewer .viewer-body>.user-section[data-open-in-viewer=false] > *{display:revert}
+
+/* 5PACE layout refinement: preserve the paired feature panels */
+.panels{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;align-items:stretch}
+.panels>.panel{min-width:0}
+.hero h1{display:none!important}
+@media(max-width:760px){.panels{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px}.panel{padding:10px}.panel-heading{align-items:flex-start;flex-direction:column}.panel-heading h2{font-size:clamp(21px,5vw,34px)}.magazine-content{grid-template-columns:1fr;min-height:0}.cover-button{min-height:180px}.magazine-copy h3{font-size:22px}.member-access{align-items:flex-start;flex-direction:column}.toolbar{grid-template-columns:1fr}.activity-row{grid-template-columns:18px minmax(0,1fr) 14px}.type-pill{display:none}}
+@media(max-width:420px){.panels{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px}.panel{padding:8px}.panel-heading h2{font-size:20px}.panel-heading>span{font-size:7px}.magazine-content{gap:8px}.cover-button{min-height:130px}.magazine-copy h3{font-size:17px}.magazine-copy p{font-size:9px}.magazine-copy .mini-rule{margin:10px 0}.text-link{font-size:8px}.toolbar{grid-template-columns:1fr}.activity-row{padding:5px 2px;gap:4px}.activity-title{font-size:9px}}
