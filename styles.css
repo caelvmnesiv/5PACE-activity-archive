@@ -109,7 +109,7 @@ body.admin-mode{padding-right:min(520px,44vw)}
 
 /* 5PACE section tabs, drag ordering and inline text links */
 .wordmark{display:none!important}
-#home>.panels{display:contents!important}
+#home>.panels{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;align-items:stretch!important;gap:24px!important}
 #custom-sections{display:contents!important}
 .user-section-open,.section-open-button{display:inline-block;margin-top:12px;padding:9px 12px;border:1px solid currentColor;background:transparent;color:inherit;font:9px var(--mono);letter-spacing:.04em;cursor:pointer}
 .user-section-open:hover,.section-open-button:hover{background:var(--ink);color:var(--white)}
@@ -131,3 +131,8 @@ body.admin-mode{padding-right:min(520px,44vw)}
 .hero h1{display:none!important}
 @media(max-width:760px){.panels{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px}.panel{padding:10px}.panel-heading{align-items:flex-start;flex-direction:column}.panel-heading h2{font-size:clamp(21px,5vw,34px)}.magazine-content{grid-template-columns:1fr;min-height:0}.cover-button{min-height:180px}.magazine-copy h3{font-size:22px}.member-access{align-items:flex-start;flex-direction:column}.toolbar{grid-template-columns:1fr}.activity-row{grid-template-columns:18px minmax(0,1fr) 14px}.type-pill{display:none}}
 @media(max-width:420px){.panels{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px}.panel{padding:8px}.panel-heading h2{font-size:20px}.panel-heading>span{font-size:7px}.magazine-content{gap:8px}.cover-button{min-height:130px}.magazine-copy h3{font-size:17px}.magazine-copy p{font-size:9px}.magazine-copy .mini-rule{margin:10px 0}.text-link{font-size:8px}.toolbar{grid-template-columns:1fr}.activity-row{padding:5px 2px;gap:4px}.activity-title{font-size:9px}}
+
+/* FIX: the paired homepage panels must remain side by side */
+main#home>.panels{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:clamp(8px,1.7vw,24px)!important;align-items:stretch!important}
+main#home>.panels>section.panel{display:block;min-width:0;width:auto!important}
+@media(max-width:760px){main#home>.panels{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:8px!important}}
