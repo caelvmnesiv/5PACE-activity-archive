@@ -66,7 +66,7 @@
     if (state.user) {
       const { data, error } = await db.rpc('is_admin');
       state.isAdmin = !error && data === true;
-      state.adminPanelOpen = state.isAdmin;
+      state.adminPanelOpen = state.isAdmin && !state.recoveryMode;
       setMessage(state.isAdmin ? 'Sesión administrativa activa.' : 'Sesión iniciada. Acceso sujeto a aprobación.');
       if (state.isAdmin) await loadMemberRequests();
     } else setMessage('Inicia sesión para consultar el directorio privado.');
