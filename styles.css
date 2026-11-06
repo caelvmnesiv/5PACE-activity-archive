@@ -265,3 +265,37 @@ body.admin-mode{
 .pb-team-card-editor button:disabled{opacity:.35;cursor:not-allowed}
 @media(max-width:760px){.user-team-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.user-team-info{padding:10px}.user-team-info p{font-size:10px}}
 @media(max-width:420px){.user-team-grid{grid-template-columns:1fr 1fr;gap:7px}.user-team-info h3{font-size:18px}.user-team-info p{font-size:9px}}
+
+
+/* OUR TEAM — compact four-column directory */
+.user-team-grid{
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:10px!important;
+  margin:16px 0!important;
+}
+.user-team-card{min-width:0!important}
+.user-team-photo{aspect-ratio:1/1!important;font-size:15px!important}
+.user-team-info{padding:8px!important;gap:4px!important}
+.user-team-role{font-size:7px!important;letter-spacing:.07em}
+.user-team-info h3{font-size:clamp(11px,1.05vw,16px)!important;line-height:1.05!important;overflow-wrap:anywhere}
+.user-team-info p{font-size:9px!important;line-height:1.35!important}
+.user-team-info>a{font-size:8px!important}
+.pb-team-columns-note{display:block;margin:5px 0 10px;color:var(--red);font:8px var(--mono);letter-spacing:.06em}
+
+/* ADMIN — reserve a real right-hand workspace instead of covering the site */
+#admin-panel.admin-panel{
+  width:clamp(360px,38vw,520px)!important;
+  inset:0 0 0 auto!important;
+}
+body.admin-mode{
+  width:calc(100% - clamp(360px,38vw,520px))!important;
+  max-width:calc(100% - clamp(360px,38vw,520px))!important;
+  margin-left:0!important;
+  margin-right:auto!important;
+  padding-right:0!important;
+  overflow-x:hidden!important;
+}
+@media(max-width:700px){
+  body.admin-mode{width:100%!important;max-width:100%!important}
+  #admin-panel.admin-panel{width:100vw!important}
+}
