@@ -12,7 +12,7 @@
     {id:'about',label:'ABOUT',selector:'.about',group:'main'}
   ];
   const editable = [
-    ['brand.wordmark','.wordmark'],['nav.home','.nav nav a[href="#home"]'],['nav.magazine','.nav nav a[href="#magazine"]'],
+    ['nav.home','.nav nav a[href="#home"]'],['nav.magazine','.nav nav a[href="#magazine"]'],
     ['nav.board','.nav nav a[href="#activity-board"]'],['nav.archive','.nav nav a[href="#archive"]'],['nav.about','.nav nav a[href="#about"]'],
     ['nav.meta','.nav-side span:first-child'],['hero.left','.hero-left-main'],['hero.left_note','.hero-left small'],
     ['hero.right','.hero-right'],['hero.caption','.hero-caption'],['magazine.title','#magazine .panel-heading h2'],
@@ -28,14 +28,14 @@
   const defaults = {
     theme:{paper:'#f2f0ec',white:'#fbfaf7',ink:'#090909',red:'#f20d19',line:'#aaa7a0',displayFont:'Barlow Condensed',bodyFont:'Manrope',navInk:'#090909',navAccent:'#f20d19',linkInk:'#090909'},
     sections:Object.fromEntries(sectionDefs.map((s,i)=>[s.id,{visible:true,order:i+1}])),
-    images:{},copy:{},customSections:[]
+    images:{},copy:{},copyLinks:{},customSections:[]
   };
   const clone = x => JSON.parse(JSON.stringify(x));
   const safe = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   function mergeConfig(raw){
     const c={...clone(defaults),...(raw||{})};
     c.theme={...defaults.theme,...(c.theme||{})};c.sections={...defaults.sections,...(c.sections||{})};
-    c.images={...(c.images||{})};c.copy={...(c.copy||{})};c.customSections=Array.isArray(c.customSections)?c.customSections:[];
+    c.images={...(c.images||{})};c.copy={...(c.copy||{})};c.copyLinks={...(c.copyLinks||{})};c.customSections=Array.isArray(c.customSections)?c.customSections:[];
     return c;
   }
   function applyConfig(){
@@ -46,9 +46,10 @@
     if(t.bodyFont)style.setProperty('--sans',"'"+t.bodyFont.replace(/[';]/g,'')+"', Arial, sans-serif");
     sectionDefs.forEach(s=>{const el=$(s.selector),cfg=state.config.sections[s.id]||{};if(el){el.hidden=cfg.visible===false;el.style.order=String(Number(cfg.order)||1);}});
     const main=$('#home');if(main){main.style.display='flex';main.style.flexDirection='column';}
-    const panels=$('.panels');if(panels){panels.style.display='grid';panels.style.order='2';}
-    ['magazine','activity-board'].forEach(id=>{const el=$('#'+id);if(el)el.style.order=String(Number(state.config.sections[id]?.order)||(id==='magazine'?1:2));});
-    editable.forEach(([key,selector])=>{const el=$(selector);if(el&&Object.prototype.hasOwnProperty.call(state.config.copy,key)){el.textContent=state.config.copy[key];if(String(state.config.copy[key]).includes('\n'))el.style.whiteSpace='pre-line';}});
+    const panels=$('.panels');if(panels){panels.style.display='contents';}
+    const customHost=$('#custom-sections');if(customHost){customHost.style.display='contents';}
+    state.config.customSections.forEach((s,i)=>{const el=document.querySelector('[data-custom-section="'+s.id+'"]');if(el){el.style.order=String(Number(s.order)||sectionDefs.length+i+1);el.hidden=s.visible===false;}});
+    editable.forEach(([key,selector])=>{const el=$(selector);if(el&&Object.prototype.hasOwnProperty.call(state.config.copy,key)){const value=String(state.config.copy[key]??''),link=state.config.copyLinks[key]||{},phrase=String(link.text||''),url=String(link.url||'');if(phrase&&url&&/^https?:\/\//i.test(url)&&value.includes(phrase)){const parts=value.split(phrase);el.innerHTML=parts.map((part,i)=>safe(part)+(i<parts.length-1?'<a href="'+safe(url)+'" target="_blank" rel="noopener noreferrer">'+safe(phrase)+'</a>':'')).join('');}else el.textContent=value;if(value.includes('\n'))el.style.whiteSpace='pre-line';}});
     Object.entries(state.config.images).forEach(([key,url])=>{const img=$('[data-site-image="'+key+'"]');if(img&&url)img.src=url;});
     renderCustomSections();
   }
@@ -59,9 +60,11 @@
     state.config.customSections.forEach(section=>{
       const el=document.createElement('section');el.className='user-section';el.dataset.customSection=section.id;
       el.style.background=section.background||'var(--white)';el.style.color=section.color||'var(--ink)';
-      el.style.padding=(Number(section.padding)||24)+'px';el.hidden=section.visible===false;
-      if(section.title){const h=document.createElement('h2');h.textContent=section.title;el.appendChild(h);}
+      el.style.padding=(Number(section.padding)||24)+'px';el.hidden=section.visible===false;el.style.order=String(Number(section.order)||sectionDefs.length+1);
+      const h=document.createElement('h2');h.textContent=section.title||'UNTITLED SECTION';el.appendChild(h);
+      const open=document.createElement('button');open.type='button';open.className='user-section-open';open.dataset.openCustom=section.id;open.textContent='OPEN SECTION ↗';el.appendChild(open);
       (section.blocks||[]).forEach(block=>{
+        if(section.openInViewer)return;
         let node;
         if(block.type==='heading'){node=document.createElement(block.level||'h3');node.textContent=block.text||'';}
         else if(block.type==='text'){node=document.createElement('p');node.textContent=block.text||'';}
@@ -76,12 +79,12 @@
     });
   }
   function renderSectionRows(){
-    return sectionDefs.map(s=>{const cfg=state.config.sections[s.id]||{},vis=cfg.visible!==false;return '<div class="pb-section" draggable="true" data-section="'+s.id+'"><span class="pb-grip">⠿</span><span class="pb-section-name">'+s.label+'</span><span class="pb-state">'+(vis?'VISIBLE':'HIDDEN')+'</span><button type="button" data-toggle="'+s.id+'">'+(vis?'HIDE':'SHOW')+'</button></div>';}).join('')+
-      state.config.customSections.map(s=>'<div class="pb-section" data-custom-row="'+safe(s.id)+'"><span class="pb-grip">＋</span><span class="pb-section-name">'+safe(s.title||'NEW SECTION')+'</span><span class="pb-state">'+(s.visible===false?'HIDDEN':'CUSTOM')+'</span><button type="button" data-custom-toggle="'+safe(s.id)+'">'+(s.visible===false?'SHOW':'HIDE')+'</button><button type="button" data-remove-section="'+safe(s.id)+'">DELETE</button></div>').join('');
+    return sectionDefs.map(s=>{const cfg=state.config.sections[s.id]||{},vis=cfg.visible!==false;return '<div class="pb-section" draggable="true" data-sort-id="'+s.id+'"><span class="pb-grip">⠿</span><span class="pb-section-name">'+s.label+'</span><span class="pb-state">'+(vis?'VISIBLE':'HIDDEN')+'</span><button type="button" data-toggle="'+s.id+'">'+(vis?'HIDE':'SHOW')+'</button></div>';}).join('')+
+      state.config.customSections.map(s=>'<div class="pb-section" draggable="true" data-sort-id="'+safe(s.id)+'"><span class="pb-grip">⠿</span><span class="pb-section-name">'+safe(s.title||'NEW SECTION')+'</span><span class="pb-state">'+(s.visible===false?'HIDDEN':'CUSTOM')+'</span><button type="button" data-custom-toggle="'+safe(s.id)+'">'+(s.visible===false?'SHOW':'HIDE')+'</button><button type="button" data-remove-section="'+safe(s.id)+'">DELETE</button></div>').join('');
   }
   function renderCopyFields(){
     const groups=[
-      {id:'brand',title:'IDENTIDAD Y NAVEGACIÓN',hint:'Logotipo textual, enlaces del menú y datos de cabecera',keys:['brand.wordmark','nav.home','nav.magazine','nav.board','nav.archive','nav.about','nav.meta']},
+      {id:'brand',title:'IDENTIDAD Y NAVEGACIÓN',hint:'Enlaces del menú y datos de cabecera',keys:['nav.home','nav.magazine','nav.board','nav.archive','nav.about','nav.meta']},
       {id:'hero',title:'HERO / PORTADA',hint:'Mensajes principales de la portada',keys:['hero.left','hero.left_note','hero.right','hero.caption']},
       {id:'magazine',title:'THE MAGAZINE',hint:'Titulares, descripción, edición y llamada a la acción',keys:['magazine.title','magazine.volume','magazine.stamp','magazine.issue','magazine.headline','magazine.description','magazine.button','magazine.note']},
       {id:'board',title:'ACTIVITY BOARD',hint:'Encabezado y mensajes de acceso',keys:['board.title','board.label','board.access_title','board.access_note','board.login','board.reset']},
@@ -94,14 +97,14 @@
       const fields=group.keys.map(key=>{
         const pair=editable.find(item=>item[0]===key),el=pair?$(pair[1]):null;
         const fallback=el?.innerText||el?.textContent||'';
-        const val=Object.prototype.hasOwnProperty.call(state.config.copy,key)?state.config.copy[key]:fallback;
-        return '<label class="pb-copy-field"><span>'+safe(key.split('.').slice(1).join(' / ').replace(/_/g,' ').toUpperCase())+'</span><textarea data-copy="'+key+'" rows="'+(String(val).length>90?4:2)+'">'+safe(val)+'</textarea></label>';
+        const val=Object.prototype.hasOwnProperty.call(state.config.copy,key)?state.config.copy[key]:fallback,link=state.config.copyLinks[key]||{};
+        return '<label class="pb-copy-field"><span>'+safe(key.split('.').slice(1).join(' / ').replace(/_/g,' ').toUpperCase())+'</span><textarea data-copy="'+key+'" rows="'+(String(val).length>90?4:2)+'">'+safe(val)+'</textarea><span>FRASE ENLAZADA (OPCIONAL)</span><input data-link-text="'+key+'" value="'+safe(link.text||'')+'" placeholder="Ej. conoce al equipo"><span>URL EXTERNA</span><input data-link-url="'+key+'" value="'+safe(link.url||'')+'" placeholder="https://..." type="url"></label>';
       }).join('');
       return '<details class="pb-copy-group" '+(index===0?'open':'')+'><summary><span class="pb-copy-group-title">'+safe(group.title)+'</span><span class="pb-copy-group-hint">'+safe(group.hint)+'</span><span class="pb-copy-group-count">'+group.keys.length+' TEXTOS</span></summary><div class="pb-copy-grid">'+fields+'</div></details>';
     }).join('');
   }
   function renderCustomEditors(){
-    return state.config.customSections.map((s,i)=>'<article class="pb-custom" data-editor-section="'+safe(s.id)+'"><div class="pb-custom-head"><strong>'+safe(s.title||'NEW SECTION')+'</strong><button type="button" data-remove-section="'+safe(s.id)+'">REMOVE SECTION ×</button></div><label>Section title<input data-section-title="'+safe(s.id)+'" value="'+safe(s.title||'')+'"></label><div class="pb-inline-fields"><label>Background<input type="color" data-section-style="background" data-id="'+safe(s.id)+'" value="'+safe(s.background||'#fbfaf7')+'"></label><label>Text color<input type="color" data-section-style="color" data-id="'+safe(s.id)+'" value="'+safe(s.color||'#090909')+'"></label><label>Padding (px)<input type="number" min="0" max="160" data-section-style="padding" data-id="'+safe(s.id)+'" value="'+(Number(s.padding)||24)+'"></label></div><div class="pb-blocks">'+(s.blocks||[]).map((b,j)=>'<div class="pb-block" data-block="'+j+'"><span>'+safe(b.type.toUpperCase())+'</span><textarea data-block-text="'+safe(s.id)+'" data-index="'+j+'" rows="2">'+safe(b.text||b.items?.join(' | ')||'')+'</textarea><button type="button" data-remove-block="'+safe(s.id)+'" data-index="'+j+'">×</button></div>').join('')+'</div><div class="pb-add-blocks"><button type="button" data-add-block="heading" data-id="'+safe(s.id)+'">+ HEADING</button><button type="button" data-add-block="text" data-id="'+safe(s.id)+'">+ TEXT</button><button type="button" data-add-block="button" data-id="'+safe(s.id)+'">+ BUTTON</button><button type="button" data-add-block="image" data-id="'+safe(s.id)+'">+ IMAGE URL</button><button type="button" data-add-block="divider" data-id="'+safe(s.id)+'">+ DIVIDER</button><button type="button" data-add-block="spacer" data-id="'+safe(s.id)+'">+ SPACER</button></div></article>').join('');
+    return state.config.customSections.map((s,i)=>'<article class="pb-custom" data-editor-section="'+safe(s.id)+'"><div class="pb-custom-head"><strong>'+safe(s.title||'NEW SECTION')+'</strong><button type="button" data-remove-section="'+safe(s.id)+'">REMOVE SECTION ×</button></div><label>Section title<input data-section-title="'+safe(s.id)+'" value="'+safe(s.title||'')+'"></label><label class="pb-viewer-toggle"><input type="checkbox" data-section-viewer="'+safe(s.id)+'" '+(s.openInViewer!==false?'checked':'')+'> Open as separate page / viewer</label><div class="pb-inline-fields"><label>Background<input type="color" data-section-style="background" data-id="'+safe(s.id)+'" value="'+safe(s.background||'#fbfaf7')+'"></label><label>Text color<input type="color" data-section-style="color" data-id="'+safe(s.id)+'" value="'+safe(s.color||'#090909')+'"></label><label>Padding (px)<input type="number" min="0" max="160" data-section-style="padding" data-id="'+safe(s.id)+'" value="'+(Number(s.padding)||24)+'"></label></div><div class="pb-blocks">'+(s.blocks||[]).map((b,j)=>'<div class="pb-block" data-block="'+j+'"><span>'+safe(b.type.toUpperCase())+'</span><textarea data-block-text="'+safe(s.id)+'" data-index="'+j+'" rows="2">'+safe(b.text||b.items?.join(' | ')||'')+'</textarea><button type="button" data-remove-block="'+safe(s.id)+'" data-index="'+j+'">×</button></div>').join('')+'</div><div class="pb-add-blocks"><button type="button" data-add-block="heading" data-id="'+safe(s.id)+'">+ HEADING</button><button type="button" data-add-block="text" data-id="'+safe(s.id)+'">+ TEXT</button><button type="button" data-add-block="button" data-id="'+safe(s.id)+'">+ BUTTON</button><button type="button" data-add-block="image" data-id="'+safe(s.id)+'">+ IMAGE URL</button><button type="button" data-add-block="divider" data-id="'+safe(s.id)+'">+ DIVIDER</button><button type="button" data-add-block="spacer" data-id="'+safe(s.id)+'">+ SPACER</button></div></article>').join('');
   }
   function render(){
     root.innerHTML='<div class="pb-top"><div><strong>PAGE BUILDER</strong><small>EDIT EVERY DETAIL · BUILD YOUR OWN SECTIONS</small></div><span class="pb-status">ADMIN WORKSPACE</span></div>'+
@@ -118,14 +121,17 @@
   function bind(){
     root.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{root.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===btn));root.querySelectorAll('[data-panel]').forEach(x=>x.hidden=x.dataset.panel!==btn.dataset.tab);}));
     root.querySelectorAll('[data-copy]').forEach(el=>el.addEventListener('input',()=>{state.config.copy[el.dataset.copy]=el.value;applyConfig();}));
+    root.querySelectorAll('[data-link-text],[data-link-url]').forEach(el=>el.addEventListener('input',()=>{const key=el.dataset.linkText||el.dataset.linkUrl;state.config.copyLinks[key]=state.config.copyLinks[key]||{};if(el.dataset.linkText)state.config.copyLinks[key].text=el.value;else state.config.copyLinks[key].url=el.value;applyConfig();}));
+    root.querySelectorAll('[data-sort-id]').forEach(row=>{row.addEventListener('dragstart',e=>{state.dragId=row.dataset.sortId;e.dataTransfer.effectAllowed='move';});row.addEventListener('dragover',e=>e.preventDefault());row.addEventListener('drop',e=>{e.preventDefault();const target=row.dataset.sortId;if(!state.dragId||state.dragId===target)return;const all=[...sectionDefs.map(x=>x.id),...state.config.customSections.map(x=>x.id)].sort((x,y)=>getOrder(x)-getOrder(y));const from=all.indexOf(state.dragId),to=all.indexOf(target);all.splice(to,0,all.splice(from,1)[0]);all.forEach((id,i)=>{if(state.config.sections[id])state.config.sections[id].order=i+1;else{const item=state.config.customSections.find(x=>x.id===id);if(item)item.order=i+1;}});state.dragId=null;applyConfig();render();root.querySelector('[data-tab="structure"]')?.click();});});
     root.querySelectorAll('[data-theme]').forEach(el=>el.addEventListener('input',()=>{state.config.theme[el.dataset.theme]=el.value;applyConfig();}));
     root.querySelectorAll('[data-font]').forEach(el=>el.addEventListener('change',()=>{state.config.theme[el.dataset.font]=el.value;applyConfig();}));
     root.querySelectorAll('[data-toggle]').forEach(el=>el.addEventListener('click',()=>{const id=el.dataset.toggle;state.config.sections[id].visible=!state.config.sections[id].visible;applyConfig();render();}));
     root.querySelectorAll('[data-custom-toggle]').forEach(el=>el.addEventListener('click',()=>{const s=state.config.customSections.find(x=>x.id===el.dataset.customToggle);if(s){s.visible=s.visible===false;applyConfig();render();root.querySelector('[data-tab="structure"]')?.click();}}));
     root.querySelectorAll('[data-remove-section]').forEach(el=>el.addEventListener('click',()=>{state.config.customSections=state.config.customSections.filter(s=>s.id!==el.dataset.removeSection);applyConfig();render();root.querySelector('[data-tab="structure"]')?.click();}));
-    $('#pb-add-section')?.addEventListener('click',()=>{const title=$('#pb-new-title').value.trim();if(!title){message('Escribe un nombre para la sección.');return;}state.config.customSections.push({id:'custom-'+Date.now(),title,visible:true,background:'#fbfaf7',color:'#090909',padding:24,blocks:[]});applyConfig();render();root.querySelector('[data-tab="structure"]')?.click();});
+    $('#pb-add-section')?.addEventListener('click',()=>{const title=$('#pb-new-title').value.trim();if(!title){message('Escribe un nombre para la sección.');return;}const order=Math.max(0,...sectionDefs.map(x=>Number(state.config.sections[x.id]?.order)||0),...state.config.customSections.map(x=>Number(x.order)||0))+1;state.config.customSections.push({id:'custom-'+Date.now(),title,visible:true,order,openInViewer:true,background:'#fbfaf7',color:'#090909',padding:24,blocks:[]});applyConfig();render();root.querySelector('[data-tab="structure"]')?.click();});
     root.querySelectorAll('[data-section-title]').forEach(el=>el.addEventListener('input',()=>{const s=state.config.customSections.find(x=>x.id===el.dataset.sectionTitle);if(s){s.title=el.value;applyConfig();}}));
     root.querySelectorAll('[data-section-style]').forEach(el=>el.addEventListener('input',()=>{const s=state.config.customSections.find(x=>x.id===el.dataset.id);if(s){s[el.dataset.sectionStyle]=el.value;applyConfig();}}));
+    root.querySelectorAll('[data-section-viewer]').forEach(el=>el.addEventListener('change',()=>{const s=state.config.customSections.find(x=>x.id===el.dataset.sectionViewer);if(s){s.openInViewer=el.checked;applyConfig();}}));
     root.querySelectorAll('[data-block-text]').forEach(el=>el.addEventListener('input',()=>{const s=state.config.customSections.find(x=>x.id===el.dataset.blockText),b=s?.blocks[Number(el.dataset.index)];if(!b)return;if(b.type==='columns')b.items=el.value.split('|').map(x=>x.trim());else if(b.type==='image')b.src=el.value;else if(b.type==='button'){const parts=el.value.split('|');b.text=parts[0]?.trim()||'OPEN';b.url=parts[1]?.trim()||'#';}else b.text=el.value;applyConfig();}));
     root.querySelectorAll('[data-add-block]').forEach(el=>el.addEventListener('click',()=>{const s=state.config.customSections.find(x=>x.id===el.dataset.id);if(!s)return;const type=el.dataset.addBlock;s.blocks.push(type==='divider'?{type}:type==='spacer'?{type,height:32}:type==='image'?{type,src:'',alt:''}:type==='button'?{type,text:'OPEN',url:'#'}:{type,text:type==='heading'?'NEW HEADING':'Write your text here'});render();root.querySelector('[data-tab="structure"]')?.click();}));
     root.querySelectorAll('[data-remove-block]').forEach(el=>el.addEventListener('click',()=>{const s=state.config.customSections.find(x=>x.id===el.dataset.removeBlock);if(s){s.blocks.splice(Number(el.dataset.index),1);applyConfig();render();root.querySelector('[data-tab="structure"]')?.click();}}));
