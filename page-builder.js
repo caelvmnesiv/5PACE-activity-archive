@@ -101,7 +101,10 @@
   async function save(publish) {
     message('Guardando…');
     const key=publish?'published':'draft';
-    const {error}=await db.from('page_settings').upsert({id:1,config:{...state.config, [key]:true},updated_at:new Date().toISOString()});
+    const payload = publish
+      ? {id:1,config:state.config,draft_config:state.config,updated_at:new Date().toISOString()}
+      : {id:1,draft_config:state.config,updated_at:new Date().toISOString()};
+    const {error}=await db.from('page_settings').upsert(payload);
     if(error){message('Error: '+error.message);return;}
     message(publish?'Cambios publicados.':'Borrador guardado.');
   }
@@ -122,16 +125,16 @@
     e.target.value='';
   }
   async function init() {
+    const {data,error}=await db.from('page_settings').select('config,draft_config').eq('id',1).maybeSingle();
+    if(error){console.warn('5PACE page settings:',error.message);return;}
     const {data:{session}}=await db.auth.getSession();
-    if(!session?.user)return;
-    const {data:admin,error:adminError}=await db.rpc('is_admin');
-    if(adminError||admin!==true)return;
-    state.isAdmin=true;
-    const {data,error}=await db.from('page_settings').select('config').eq('id',1).maybeSingle();
-    if(error){root.innerHTML='<p>No se pudo cargar Page Builder: '+safe(error.message)+'</p>';return;}
-    state.config=mergeConfig(data?.config);
-    // Published config is what visitors receive. Draft editing starts from the latest saved draft.
-    applyConfig();render();
+    let isAdmin=false;
+    if(session?.user){const {data:admin,error:adminError}=await db.rpc('is_admin');isAdmin=!adminError&&admin===true;}
+    state.isAdmin=isAdmin;
+    state.config=mergeConfig(isAdmin ? (data?.draft_config || data?.config) : data?.config);
+    applyConfig();
+    if(!isAdmin)return;
+    render();
   }
   init();
 })();
