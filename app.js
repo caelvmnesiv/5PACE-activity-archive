@@ -107,6 +107,7 @@
   }
   $('#open-magazine').addEventListener('click', openMagazine); $('#open-magazine-text').addEventListener('click', openMagazine);
   $('#about-open')?.addEventListener('click',()=>openViewer('ABOUT / 5PACE',document.querySelector('#about')));
+  document.addEventListener('click',e=>{const team=e.target.closest('[data-open-team]');if(!team)return;e.preventDefault();const section=document.querySelector('#our-team');if(section)openViewer('OUR TEAM / 5PACE',section,'popup');});
   document.addEventListener('click',e=>{const about=e.target.closest('[data-open-about]');if(about){e.preventDefault();openViewer('ABOUT / 5PACE',document.querySelector('#about'));return;}});
   document.addEventListener('click',e=>{const button=e.target.closest('[data-open-custom]');if(!button)return;e.preventDefault();const section=document.querySelector('[data-custom-section="'+CSS.escape(button.dataset.openCustom)+'"]');if(section)openViewer((section.querySelector('h2')?.textContent||'5PACE SECTION')+' / 5PACE',section,section.dataset.displayMode||'tab');});
   $('#close-viewer').addEventListener('click', () => { viewer.classList.remove('open','popup-window'); viewer.setAttribute('aria-hidden','true'); body.innerHTML = '';body.dataset.sourceId='';body.dataset.sourceType='';const heading=viewer.querySelector('.viewer-head span');if(heading)heading.textContent='THE MAGAZINE / HEYZINE VIEWER'; });
