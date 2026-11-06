@@ -554,3 +554,38 @@ details[open]>summary .pb-collapse-indicator{transform:rotate(45deg)}
 .pb-team-card-fields button:last-child{color:var(--red);border-color:var(--red)}
 .pb-team-add-member{justify-self:start;margin-top:5px;border-color:var(--red);color:var(--red)}
 @media(max-width:480px){.pb-team-card-fields{grid-template-columns:1fr}.pb-team-card-fields>label:nth-of-type(2),.pb-team-card-fields>label:nth-of-type(5){grid-column:auto}}
+
+
+/* OUR TEAM — one roster, four-column member grid */
+.our-team-section{order:4;width:100%;margin:22px 0 28px;padding:clamp(18px,3vw,34px);border:1px solid var(--line);background:var(--white);color:var(--ink)}
+.our-team-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding-bottom:14px;margin-bottom:18px;border-bottom:1px solid var(--line);font:8px var(--mono);letter-spacing:.08em}
+.our-team-heading h2{margin:0;font:800 clamp(30px,4vw,52px)/.9 var(--display);letter-spacing:-.02em}
+.our-team-heading h2 em{color:var(--red);font-style:normal}
+.user-team-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;align-items:start}
+.user-team-card{min-width:0;border:1px solid var(--line);background:var(--paper);overflow:hidden}
+.user-team-photo{width:100%;aspect-ratio:4/5;display:grid;place-items:center;background:#dedbd5;color:#888;font:700 16px var(--display);overflow:hidden}
+.user-team-photo img{width:100%;height:100%;max-width:none;max-height:none;object-fit:cover}
+.user-team-info{padding:12px}
+.user-team-role{display:block;margin-bottom:5px;color:var(--red);font:8px var(--mono);letter-spacing:.08em;text-transform:uppercase}
+.user-team-info h3{margin:0 0 6px;font:700 clamp(17px,1.7vw,24px)/1 var(--display)}
+.user-team-info p{margin:0 0 8px;font:10px/1.55 var(--sans);overflow-wrap:anywhere}
+.user-team-info a{font:8px var(--mono);color:var(--red);text-decoration:none}
+.pb-our-team{border:1px solid var(--red);background:#fff8f5;margin-top:8px}
+.pb-our-team>summary{display:flex;align-items:center;gap:12px;padding:12px;cursor:pointer;list-style:none}
+.pb-our-team>summary::-webkit-details-marker{display:none}
+.pb-our-team>summary strong{font:700 17px var(--display);flex:1}
+.pb-our-team>summary small{font:8px var(--mono);color:#777}
+.pb-our-team[open]>summary{border-bottom:1px solid var(--line)}
+.pb-our-team-content{padding:12px}
+.pb-team-editors-list{display:grid;grid-template-columns:1fr;gap:9px}
+.pb-team-member-editor{border:1px solid var(--line);background:#fff;padding:10px}
+.pb-team-member-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;font:9px var(--mono)}
+.pb-team-member-top button{border:1px solid var(--red);background:transparent;color:var(--red);padding:5px 8px;font:8px var(--mono);cursor:pointer}
+.pb-team-card-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pb-team-card-fields>label{display:flex;flex-direction:column;gap:4px;font:8px var(--mono);color:#555;min-width:0}
+.pb-team-card-fields>label:nth-of-type(2),.pb-team-card-fields>label:nth-of-type(5){grid-column:1/-1}
+.pb-team-card-fields input,.pb-team-card-fields textarea{width:100%;min-width:0;padding:8px;border:1px solid var(--line);background:#fff;color:var(--ink);font:10px var(--sans)}
+.pb-team-card-fields textarea{min-height:65px;resize:vertical}
+.pb-team-add-member{justify-self:start;margin-top:12px;padding:9px 12px;border:1px solid var(--red);background:var(--red);color:#fff;font:9px var(--mono);cursor:pointer}
+@media(max-width:800px){.user-team-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}}
+@media(max-width:480px){.our-team-heading{align-items:flex-start;flex-direction:column}.user-team-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.user-team-info{padding:8px}.pb-team-card-fields{grid-template-columns:1fr}.pb-team-card-fields>label:nth-of-type(2),.pb-team-card-fields>label:nth-of-type(5){grid-column:auto}}
