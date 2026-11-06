@@ -227,3 +227,15 @@ body.admin-mode{
 
 /* Native hidden state must win over component display rules. */
 [hidden]{display:none!important}
+
+/* NAVIGATION VISIBILITY + SECTION PRESENTATION MODES */
+.pb-nav-visibility{display:flex;align-items:center;gap:8px;margin-top:8px;font:9px var(--mono)}
+.pb-nav-visibility input{width:15px;height:15px}
+.pb-section-custom{grid-template-columns:18px minmax(90px,1fr) minmax(100px,130px) auto auto auto;align-items:center}
+.pb-section-custom select{min-width:0;max-width:130px;padding:6px 7px;border:1px solid var(--line);background:var(--white);font:9px var(--mono)}
+.user-section[data-display-mode="popup"] > :not(h2):not(.user-section-open){display:none}
+.viewer.popup-window{padding:0;inset:0;background:#090909b8;backdrop-filter:blur(3px);place-items:center;grid-template-rows:minmax(0,1fr)}
+.viewer.popup-window .viewer-head{position:absolute;top:0;left:0;right:0;height:48px;padding:0 24px;background:#090909;color:#fff;z-index:2}
+.viewer.popup-window .viewer-body{width:min(760px,calc(100vw - 36px));max-height:calc(100vh - 90px);margin:54px auto 36px;padding:clamp(18px,4vw,40px);overflow:auto;background:var(--paper);color:var(--ink);border:1px solid var(--line)}
+.viewer.popup-window .viewer-body>.user-section{width:100%;min-height:0;max-height:none;overflow:visible;padding:0;border:0;background:transparent}
+@media(max-width:650px){.pb-section-custom{grid-template-columns:16px minmax(0,1fr) minmax(95px,115px);}.pb-section-custom .pb-state{display:none}.pb-section-custom button{grid-row:2}.viewer.popup-window .viewer-body{width:calc(100vw - 24px);max-height:calc(100dvh - 76px);margin-top:50px}}
