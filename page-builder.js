@@ -58,13 +58,12 @@
     if(!host){host=document.createElement('div');host.id='custom-sections';host.className='custom-sections';$('#home')?.appendChild(host);}
     host.replaceChildren();
     state.config.customSections.forEach(section=>{
-      const el=document.createElement('section');el.className='user-section';el.dataset.customSection=section.id;
+      const el=document.createElement('section');el.className='user-section';el.dataset.customSection=section.id;el.dataset.openInViewer=section.openInViewer!==false?'true':'false';
       el.style.background=section.background||'var(--white)';el.style.color=section.color||'var(--ink)';
       el.style.padding=(Number(section.padding)||24)+'px';el.hidden=section.visible===false;el.style.order=String(Number(section.order)||sectionDefs.length+1);
       const h=document.createElement('h2');h.textContent=section.title||'UNTITLED SECTION';el.appendChild(h);
       const open=document.createElement('button');open.type='button';open.className='user-section-open';open.dataset.openCustom=section.id;open.textContent='OPEN SECTION ↗';el.appendChild(open);
       (section.blocks||[]).forEach(block=>{
-        if(section.openInViewer)return;
         let node;
         if(block.type==='heading'){node=document.createElement(block.level||'h3');node.textContent=block.text||'';}
         else if(block.type==='text'){node=document.createElement('p');node.textContent=block.text||'';}
