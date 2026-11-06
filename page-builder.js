@@ -44,9 +44,9 @@
     style.setProperty('--nav-ink',t.navInk||t.ink);style.setProperty('--nav-accent',t.navAccent||t.red);style.setProperty('--link-ink',t.linkInk||t.ink);
     if(t.displayFont)style.setProperty('--display',"'"+t.displayFont.replace(/[';]/g,'')+"', Impact, sans-serif");
     if(t.bodyFont)style.setProperty('--sans',"'"+t.bodyFont.replace(/[';]/g,'')+"', Arial, sans-serif");
-    sectionDefs.forEach(s=>{const el=$(s.selector),cfg=state.config.sections[s.id]||{};if(el){el.hidden=cfg.visible===false;el.style.order=s.group==='panels'?'0':String(Number(cfg.order)||1);}});
+    sectionDefs.forEach(s=>{const el=$(s.selector),cfg=state.config.sections[s.id]||{};if(el){el.hidden=cfg.visible===false;if(s.id==='hero')el.style.order='0';else if(s.group==='panels')el.style.order='0';else el.style.order=String(Math.max(2,Number(cfg.order)||2));}});
     const main=$('#home');if(main){main.style.display='flex';main.style.flexDirection='column';}
-    const panels=$('.panels');if(panels){panels.style.display='grid';panels.style.gridTemplateColumns='repeat(2,minmax(0,1fr))';}
+    const panels=$('.panels');if(panels){panels.style.display='grid';panels.style.gridTemplateColumns='repeat(2,minmax(0,1fr))';panels.style.order='1';}
     const customHost=$('#custom-sections');if(customHost){customHost.style.display='contents';}
     const aboutSource=$('#about');if(aboutSource)aboutSource.hidden=true;
     state.config.customSections.forEach((s,i)=>{const el=document.querySelector('[data-custom-section="'+s.id+'"]');if(el){el.style.order=String(Number(s.order)||sectionDefs.length+i+1);el.hidden=s.visible===false;}});
@@ -80,15 +80,17 @@
     const nav=$('.nav nav');if(nav){nav.querySelectorAll('[data-custom-nav]').forEach(a=>a.remove());state.config.customSections.filter(s=>s.openInViewer!==false&&s.visible!==false).sort((a,b)=>(Number(a.order)||999)-(Number(b.order)||999)).forEach(s=>{const a=document.createElement('a');a.href='#';a.dataset.openCustom=s.id;a.dataset.customNav='true';a.textContent=(s.title||'NEW PAGE').toUpperCase();nav.appendChild(a);});}
   }
   function renderSectionRows(){
+    const movableDefs=sectionDefs.filter(s=>s.id!=='hero'&&s.group!=='panels');
     const items=[
-      ...sectionDefs.filter(s=>s.group!=='panels').map(s=>({id:s.id,label:s.label,order:Number(state.config.sections[s.id]?.order)||1,custom:false})),
+      ...movableDefs.map(s=>({id:s.id,label:s.label,order:Number(state.config.sections[s.id]?.order)||2,custom:false})),
       ...state.config.customSections.map(s=>({id:s.id,label:s.title||'NEW SECTION',order:Number(s.order)||sectionDefs.length+1,custom:true,visible:s.visible!==false}))
     ].sort((a,b)=>a.order-b.order);
+    const fixedHero='<div class="pb-section pb-section-fixed"><span class="pb-section-name">HERO / PORTADA</span><span class="pb-state">FIXED · FIRST</span></div>';
     const fixedPair='<div class="pb-section pb-section-fixed"><span class="pb-section-name">THE MAGAZINE + ACTIVITY BOARD</span><span class="pb-state">FIXED · TWO COLUMNS</span></div>';
-    return fixedPair+items.map(item=>{
+    return fixedHero+fixedPair+items.map(item=>{
       if(!item.custom){const cfg=state.config.sections[item.id]||{},vis=cfg.visible!==false;return '<div class="pb-section" draggable="true" data-sort-id="'+item.id+'"><span class="pb-grip">⠿</span><span class="pb-section-name">'+item.label+'</span><span class="pb-state">'+(vis?'VISIBLE':'HIDDEN')+'</span><button type="button" data-toggle="'+item.id+'">'+(vis?'HIDE':'SHOW')+'</button></div>';}
-      const s=state.config.customSections.find(x=>x.id===item.id);
-      return '<div class="pb-section" draggable="true" data-sort-id="'+safe(s.id)+'"><span class="pb-grip">⠿</span><span class="pb-section-name">'+safe(s.title||'NEW SECTION')+'</span><span class="pb-state">'+(s.visible===false?'HIDDEN':'CUSTOM')+'</span><button type="button" data-custom-toggle="'+safe(s.id)+'">'+(s.visible===false?'SHOW':'HIDE')+'</button><button type="button" data-remove-section="'+safe(s.id)+'">DELETE</button></div>';
+      const sec=state.config.customSections.find(x=>x.id===item.id);
+      return '<div class="pb-section" draggable="true" data-sort-id="'+safe(sec.id)+'"><span class="pb-grip">⠿</span><span class="pb-section-name">'+safe(sec.title||'NEW SECTION')+'</span><span class="pb-state">'+(sec.visible===false?'HIDDEN':'CUSTOM')+'</span><button type="button" data-custom-toggle="'+safe(sec.id)+'">'+(sec.visible===false?'SHOW':'HIDE')+'</button><button type="button" data-remove-section="'+safe(sec.id)+'">DELETE</button></div>';
     }).join('');
   }
   function renderCopyFields(){
@@ -131,7 +133,7 @@
     root.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{root.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===btn));root.querySelectorAll('[data-panel]').forEach(x=>x.hidden=x.dataset.panel!==btn.dataset.tab);}));
     root.querySelectorAll('[data-copy]').forEach(el=>el.addEventListener('input',()=>{state.config.copy[el.dataset.copy]=el.value;applyConfig();}));
     root.querySelectorAll('[data-link-text],[data-link-url]').forEach(el=>el.addEventListener('input',()=>{const key=el.dataset.linkText||el.dataset.linkUrl;if(!Object.prototype.hasOwnProperty.call(state.config.copy,key)){const pair=editable.find(item=>item[0]===key),target=pair?$(pair[1]):null;state.config.copy[key]=target?.textContent||'';}state.config.copyLinks[key]=state.config.copyLinks[key]||{};if(el.dataset.linkText)state.config.copyLinks[key].text=el.value;else state.config.copyLinks[key].url=el.value;applyConfig();}));
-    root.querySelectorAll('[data-sort-id]').forEach(row=>{row.addEventListener('dragstart',e=>{state.dragId=row.dataset.sortId;e.dataTransfer.effectAllowed='move';});row.addEventListener('dragover',e=>e.preventDefault());row.addEventListener('drop',e=>{e.preventDefault();const target=row.dataset.sortId;if(!state.dragId||state.dragId===target)return;const all=[...sectionDefs.map(x=>x.id),...state.config.customSections.map(x=>x.id)];all.sort((x,y)=>{const ox=state.config.sections[x]?.order??state.config.customSections.find(s=>s.id===x)?.order??0;const oy=state.config.sections[y]?.order??state.config.customSections.find(s=>s.id===y)?.order??0;return ox-oy;});const from=all.indexOf(state.dragId),to=all.indexOf(target);all.splice(to,0,all.splice(from,1)[0]);all.forEach((id,i)=>{if(state.config.sections[id])state.config.sections[id].order=i+1;else{const item=state.config.customSections.find(x=>x.id===id);if(item)item.order=i+1;}});state.dragId=null;applyConfig();render();root.querySelector('[data-tab="structure"]')?.click();});});
+    root.querySelectorAll('[data-sort-id]').forEach(row=>{row.addEventListener('dragstart',e=>{state.dragId=row.dataset.sortId;e.dataTransfer.effectAllowed='move';});row.addEventListener('dragover',e=>e.preventDefault());row.addEventListener('drop',e=>{e.preventDefault();const target=row.dataset.sortId;if(!state.dragId||state.dragId===target)return;const movable=[...sectionDefs.filter(x=>x.id!=='hero'&&x.group!=='panels').map(x=>x.id),...state.config.customSections.map(x=>x.id)];movable.sort((x,y)=>{const ox=state.config.sections[x]?.order??state.config.customSections.find(s=>s.id===x)?.order??2;const oy=state.config.sections[y]?.order??state.config.customSections.find(s=>s.id===y)?.order??2;return ox-oy;});const from=movable.indexOf(state.dragId),to=movable.indexOf(target);if(from<0||to<0)return;movable.splice(to,0,movable.splice(from,1)[0]);movable.forEach((id,i)=>{const order=i+2;if(state.config.sections[id])state.config.sections[id].order=order;else{const item=state.config.customSections.find(x=>x.id===id);if(item)item.order=order;}});state.dragId=null;applyConfig();render();root.querySelector('[data-tab="structure"]')?.click();});});
     root.querySelectorAll('[data-theme]').forEach(el=>el.addEventListener('input',()=>{state.config.theme[el.dataset.theme]=el.value;applyConfig();}));
     root.querySelectorAll('[data-font]').forEach(el=>el.addEventListener('change',()=>{state.config.theme[el.dataset.font]=el.value;applyConfig();}));
     root.querySelectorAll('[data-toggle]').forEach(el=>el.addEventListener('click',()=>{const id=el.dataset.toggle;state.config.sections[id].visible=!state.config.sections[id].visible;applyConfig();render();}));
