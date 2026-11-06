@@ -181,3 +181,6 @@ main#home>.panels>.panel[hidden]{display:none!important}
   main#home>.panels .magazine-content{grid-template-columns:1fr}
   main#home>.panels .cover-button{min-height:210px}
 }
+
+.pb-section-fixed{border:1px solid var(--red)!important;background:#fff8f5!important;cursor:default!important}
+.pb-section-fixed .pb-section-name{font-weight:700}
