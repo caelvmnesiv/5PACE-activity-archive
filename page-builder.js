@@ -80,7 +80,25 @@
       state.config.customSections.map(s=>'<div class="pb-section" data-custom-row="'+safe(s.id)+'"><span class="pb-grip">＋</span><span class="pb-section-name">'+safe(s.title||'NEW SECTION')+'</span><span class="pb-state">'+(s.visible===false?'HIDDEN':'CUSTOM')+'</span><button type="button" data-custom-toggle="'+safe(s.id)+'">'+(s.visible===false?'SHOW':'HIDE')+'</button><button type="button" data-remove-section="'+safe(s.id)+'">DELETE</button></div>').join('');
   }
   function renderCopyFields(){
-    return editable.map(([key,selector])=>{const el=$(selector),fallback=el?.innerText||el?.textContent||'';const val=Object.prototype.hasOwnProperty.call(state.config.copy,key)?state.config.copy[key]:fallback;return '<label class="pb-copy-field"><span>'+safe(key.replace(/[._]/g,' / ').toUpperCase())+'</span><textarea data-copy="'+key+'" rows="'+(String(val).length>90?4:2)+'">'+safe(val)+'</textarea></label>';}).join('');
+    const groups=[
+      {id:'brand',title:'IDENTIDAD Y NAVEGACIÓN',hint:'Logotipo textual, enlaces del menú y datos de cabecera',keys:['brand.wordmark','nav.home','nav.magazine','nav.board','nav.archive','nav.about','nav.meta']},
+      {id:'hero',title:'HERO / PORTADA',hint:'Mensajes principales de la portada',keys:['hero.left','hero.left_note','hero.right','hero.caption']},
+      {id:'magazine',title:'THE MAGAZINE',hint:'Titulares, descripción, edición y llamada a la acción',keys:['magazine.title','magazine.volume','magazine.stamp','magazine.issue','magazine.headline','magazine.description','magazine.button','magazine.note']},
+      {id:'board',title:'ACTIVITY BOARD',hint:'Encabezado y mensajes de acceso',keys:['board.title','board.label','board.access_title','board.access_note','board.login','board.reset']},
+      {id:'strip',title:'EDITORIAL STRIP',hint:'Textos de la franja gráfica inferior',keys:['strip.label','strip.words','strip.note']},
+      {id:'about',title:'ABOUT',hint:'Presentación y texto informativo',keys:['about.label','about.title','about.copy','about.mark']},
+      {id:'footer',title:'FOOTER / PIE DE PÁGINA',hint:'Identificación y cierre del sitio',keys:['footer.brand','footer.tagline','footer.copyright']},
+      {id:'viewer',title:'VISUALIZADOR',hint:'Textos de la ventana de The Magazine',keys:['viewer.title','viewer.close']}
+    ];
+    return groups.map((group,index)=>{
+      const fields=group.keys.map(key=>{
+        const pair=editable.find(item=>item[0]===key),el=pair?$(pair[1]):null;
+        const fallback=el?.innerText||el?.textContent||'';
+        const val=Object.prototype.hasOwnProperty.call(state.config.copy,key)?state.config.copy[key]:fallback;
+        return '<label class="pb-copy-field"><span>'+safe(key.split('.').slice(1).join(' / ').replace(/_/g,' ').toUpperCase())+'</span><textarea data-copy="'+key+'" rows="'+(String(val).length>90?4:2)+'">'+safe(val)+'</textarea></label>';
+      }).join('');
+      return '<details class="pb-copy-group" '+(index===0?'open':'')+'><summary><span class="pb-copy-group-title">'+safe(group.title)+'</span><span class="pb-copy-group-hint">'+safe(group.hint)+'</span><span class="pb-copy-group-count">'+group.keys.length+' TEXTOS</span></summary><div class="pb-copy-grid">'+fields+'</div></details>';
+    }).join('');
   }
   function renderCustomEditors(){
     return state.config.customSections.map((s,i)=>'<article class="pb-custom" data-editor-section="'+safe(s.id)+'"><div class="pb-custom-head"><strong>'+safe(s.title||'NEW SECTION')+'</strong><button type="button" data-remove-section="'+safe(s.id)+'">REMOVE SECTION ×</button></div><label>Section title<input data-section-title="'+safe(s.id)+'" value="'+safe(s.title||'')+'"></label><div class="pb-inline-fields"><label>Background<input type="color" data-section-style="background" data-id="'+safe(s.id)+'" value="'+safe(s.background||'#fbfaf7')+'"></label><label>Text color<input type="color" data-section-style="color" data-id="'+safe(s.id)+'" value="'+safe(s.color||'#090909')+'"></label><label>Padding (px)<input type="number" min="0" max="160" data-section-style="padding" data-id="'+safe(s.id)+'" value="'+(Number(s.padding)||24)+'"></label></div><div class="pb-blocks">'+(s.blocks||[]).map((b,j)=>'<div class="pb-block" data-block="'+j+'"><span>'+safe(b.type.toUpperCase())+'</span><textarea data-block-text="'+safe(s.id)+'" data-index="'+j+'" rows="2">'+safe(b.text||b.items?.join(' | ')||'')+'</textarea><button type="button" data-remove-block="'+safe(s.id)+'" data-index="'+j+'">×</button></div>').join('')+'</div><div class="pb-add-blocks"><button type="button" data-add-block="heading" data-id="'+safe(s.id)+'">+ HEADING</button><button type="button" data-add-block="text" data-id="'+safe(s.id)+'">+ TEXT</button><button type="button" data-add-block="button" data-id="'+safe(s.id)+'">+ BUTTON</button><button type="button" data-add-block="image" data-id="'+safe(s.id)+'">+ IMAGE URL</button><button type="button" data-add-block="divider" data-id="'+safe(s.id)+'">+ DIVIDER</button><button type="button" data-add-block="spacer" data-id="'+safe(s.id)+'">+ SPACER</button></div></article>').join('');
