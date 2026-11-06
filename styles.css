@@ -184,3 +184,43 @@ main#home>.panels>.panel[hidden]{display:none!important}
 
 .pb-section-fixed{border:1px solid var(--red)!important;background:#fff8f5!important;cursor:default!important}
 .pb-section-fixed .pb-section-name{font-weight:700}
+
+
+/* ADMIN WORKSPACE: lock the shell to the viewport and scroll only its content */
+#admin-panel.admin-panel{
+  position:fixed!important;
+  inset:0 0 0 auto!important;
+  height:100vh!important;
+  height:100dvh!important;
+  max-height:none!important;
+  width:min(520px,42vw)!important;
+  display:flex!important;
+  flex-direction:column!important;
+  overflow:hidden!important;
+}
+#admin-panel.admin-panel[hidden]{display:none!important}
+#admin-panel .admin-shell-head{
+  position:relative!important;
+  top:auto!important;
+  flex:0 0 auto!important;
+}
+#admin-panel .admin-shell-content{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  height:auto!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch;
+}
+body.admin-mode{
+  padding-right:min(520px,42vw)!important;
+  overflow-x:clip;
+}
+@media(max-width:900px){
+  body.admin-mode{padding-right:0!important}
+  #admin-panel.admin-panel{width:min(520px,100vw)!important}
+}
+@media(max-width:700px){
+  #admin-panel.admin-panel{width:100vw!important}
+}
