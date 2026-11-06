@@ -14,7 +14,7 @@
   const editable = [
     ['brand.wordmark','.wordmark'],['nav.home','.nav nav a[href="#home"]'],['nav.magazine','.nav nav a[href="#magazine"]'],
     ['nav.board','.nav nav a[href="#activity-board"]'],['nav.archive','.nav nav a[href="#archive"]'],['nav.about','.nav nav a[href="#about"]'],
-    ['nav.meta','.nav-side span:first-child'],['hero.left','.hero-left'],['hero.left_note','.hero-left small'],
+    ['nav.meta','.nav-side span:first-child'],['hero.left','.hero-left-main'],['hero.left_note','.hero-left small'],
     ['hero.right','.hero-right'],['hero.caption','.hero-caption'],['magazine.title','#magazine .panel-heading h2'],
     ['magazine.volume','#magazine .panel-heading span'],['magazine.stamp','.cover-stamp'],['magazine.issue','.cover-issue'],
     ['magazine.headline','.magazine-copy h3'],['magazine.description','.magazine-copy p:not(.heyzine-note)'],
@@ -77,7 +77,7 @@
   }
   function renderSectionRows(){
     return sectionDefs.map(s=>{const cfg=state.config.sections[s.id]||{},vis=cfg.visible!==false;return '<div class="pb-section" draggable="true" data-section="'+s.id+'"><span class="pb-grip">⠿</span><span class="pb-section-name">'+s.label+'</span><span class="pb-state">'+(vis?'VISIBLE':'HIDDEN')+'</span><button type="button" data-toggle="'+s.id+'">'+(vis?'HIDE':'SHOW')+'</button></div>';}).join('')+
-      state.config.customSections.map(s=>'<div class="pb-section" data-custom-row="'+safe(s.id)+'"><span class="pb-grip">＋</span><span class="pb-section-name">'+safe(s.title||'NEW SECTION')+'</span><span class="pb-state">CUSTOM</span><button type="button" data-remove-section="'+safe(s.id)+'">DELETE</button></div>').join('');
+      state.config.customSections.map(s=>'<div class="pb-section" data-custom-row="'+safe(s.id)+'"><span class="pb-grip">＋</span><span class="pb-section-name">'+safe(s.title||'NEW SECTION')+'</span><span class="pb-state">'+(s.visible===false?'HIDDEN':'CUSTOM')+'</span><button type="button" data-custom-toggle="'+safe(s.id)+'">'+(s.visible===false?'SHOW':'HIDE')+'</button><button type="button" data-remove-section="'+safe(s.id)+'">DELETE</button></div>').join('');
   }
   function renderCopyFields(){
     return editable.map(([key,selector])=>{const el=$(selector),fallback=el?.innerText||el?.textContent||'';const val=Object.prototype.hasOwnProperty.call(state.config.copy,key)?state.config.copy[key]:fallback;return '<label class="pb-copy-field"><span>'+safe(key.replace(/[._]/g,' / ').toUpperCase())+'</span><textarea data-copy="'+key+'" rows="'+(String(val).length>90?4:2)+'">'+safe(val)+'</textarea></label>';}).join('');
@@ -103,7 +103,8 @@
     root.querySelectorAll('[data-theme]').forEach(el=>el.addEventListener('input',()=>{state.config.theme[el.dataset.theme]=el.value;applyConfig();}));
     root.querySelectorAll('[data-font]').forEach(el=>el.addEventListener('change',()=>{state.config.theme[el.dataset.font]=el.value;applyConfig();}));
     root.querySelectorAll('[data-toggle]').forEach(el=>el.addEventListener('click',()=>{const id=el.dataset.toggle;state.config.sections[id].visible=!state.config.sections[id].visible;applyConfig();render();}));
-    root.querySelectorAll('[data-remove-section]').forEach(el=>el.addEventListener('click',()=>{state.config.customSections=state.config.customSections.filter(s=>s.id!==el.dataset.removeSection);applyConfig();render();}));
+    root.querySelectorAll('[data-custom-toggle]').forEach(el=>el.addEventListener('click',()=>{const s=state.config.customSections.find(x=>x.id===el.dataset.customToggle);if(s){s.visible=s.visible===false;applyConfig();render();root.querySelector('[data-tab="structure"]')?.click();}}));
+    root.querySelectorAll('[data-remove-section]').forEach(el=>el.addEventListener('click',()=>{state.config.customSections=state.config.customSections.filter(s=>s.id!==el.dataset.removeSection);applyConfig();render();root.querySelector('[data-tab="structure"]')?.click();}));
     $('#pb-add-section')?.addEventListener('click',()=>{const title=$('#pb-new-title').value.trim();if(!title){message('Escribe un nombre para la sección.');return;}state.config.customSections.push({id:'custom-'+Date.now(),title,visible:true,background:'#fbfaf7',color:'#090909',padding:24,blocks:[]});applyConfig();render();root.querySelector('[data-tab="structure"]')?.click();});
     root.querySelectorAll('[data-section-title]').forEach(el=>el.addEventListener('input',()=>{const s=state.config.customSections.find(x=>x.id===el.dataset.sectionTitle);if(s){s.title=el.value;applyConfig();}}));
     root.querySelectorAll('[data-section-style]').forEach(el=>el.addEventListener('input',()=>{const s=state.config.customSections.find(x=>x.id===el.dataset.id);if(s){s[el.dataset.sectionStyle]=el.value;applyConfig();}}));
