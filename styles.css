@@ -533,3 +533,24 @@ details[open]>summary .pb-collapse-indicator{transform:rotate(45deg)}
   letter-spacing:.02em;
 }
 .pb-custom[open]>.pb-custom-content{border-top:1px solid var(--line)}
+
+
+/* OUR TEAM — flat group/member editor */
+.pb-custom-content{display:block}
+.pb-team-members{display:grid;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.pb-team-members-heading{font:9px var(--mono);letter-spacing:.08em;color:var(--red);padding:0 0 4px}
+.pb-team-card-editor{display:block!important;border:1px solid var(--line);background:#fff;margin:0;padding:0}
+.pb-team-card-editor>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;cursor:pointer;list-style:none;font:10px var(--mono)}
+.pb-team-card-editor>summary::-webkit-details-marker{display:none}
+.pb-team-card-editor>summary::marker{content:""}
+.pb-team-card-editor[open]>summary{border-bottom:1px solid var(--line)}
+.pb-team-card-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px}
+.pb-team-card-fields>label{display:flex;flex-direction:column;gap:4px;font:8px var(--mono);color:#555}
+.pb-team-card-fields>label:nth-of-type(2),.pb-team-card-fields>label:nth-of-type(5){grid-column:1/-1}
+.pb-team-card-fields input,.pb-team-card-fields textarea{width:100%;min-width:0;padding:8px;border:1px solid var(--line);background:#fff;color:var(--ink);font:10px var(--sans)}
+.pb-team-card-fields textarea{min-height:65px;resize:vertical}
+.pb-team-card-fields>div{grid-column:1/-1}
+.pb-team-card-fields button,.pb-team-add-member{padding:8px 10px;margin:3px 5px 0 0;border:1px solid var(--line);background:transparent;color:var(--ink);font:8px var(--mono);cursor:pointer}
+.pb-team-card-fields button:last-child{color:var(--red);border-color:var(--red)}
+.pb-team-add-member{justify-self:start;margin-top:5px;border-color:var(--red);color:var(--red)}
+@media(max-width:480px){.pb-team-card-fields{grid-template-columns:1fr}.pb-team-card-fields>label:nth-of-type(2),.pb-team-card-fields>label:nth-of-type(5){grid-column:auto}}
