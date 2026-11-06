@@ -18,7 +18,8 @@
   }
   function render() {
     const q = search.value.trim().toLowerCase(), type = filter.value;
-    const visibleActivities = state.viewAsMember ? state.activities.filter(a => a.status === 'published') : state.activities;\n    const rows = visibleActivities.filter(a => (!q || `${a.title} ${a.category || ''}`.toLowerCase().includes(q)) && (type === 'all' || type === a.category));
+    const visibleActivities = state.viewAsMember ? state.activities.filter(a => a.status === 'published') : state.activities;
+    const rows = visibleActivities.filter(a => (!q || `${a.title} ${a.category || ''}`.toLowerCase().includes(q)) && (type === 'all' || type === a.category));
     list.innerHTML = rows.map((a, i) => {
       const url = a.content?.facebook_url || '';
       const tag = url ? 'a' : 'div';
