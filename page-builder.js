@@ -55,6 +55,16 @@
     editable.forEach(([key,selector])=>{const el=$(selector);if(el&&Object.prototype.hasOwnProperty.call(state.config.copy,key)){const value=String(state.config.copy[key]??''),link=state.config.copyLinks[key]||{},phrase=String(link.text||''),url=String(link.url||'');if(phrase&&url&&/^https?:\/\//i.test(url)&&value.includes(phrase)){const parts=value.split(phrase);el.innerHTML=parts.map((part,i)=>safe(part)+(i<parts.length-1?'<a href="'+safe(url)+'" target="_blank" rel="noopener noreferrer">'+safe(phrase)+'</a>':'')).join('');}else el.textContent=value;if(value.includes('\n'))el.style.whiteSpace='pre-line';}});
     Object.entries(state.config.images).forEach(([key,url])=>{const img=$('[data-site-image="'+key+'"]');if(img&&url)img.src=url;});
     renderCustomSections();
+    refreshOpenViewer();
+  }
+  function refreshOpenViewer(){
+    const body=$('#viewer-body'),viewer=$('#viewer');if(!body||!viewer?.classList.contains('open'))return;
+    const id=body.dataset.sourceId,type=body.dataset.sourceType;if(!id||!type)return;
+    const source=type==='fixed'?document.getElementById(id):document.querySelector('[data-custom-section="'+CSS.escape(id)+'"]');
+    if(!source)return;
+    const clone=source.cloneNode(true);clone.querySelectorAll('button').forEach(b=>b.remove());
+    if(clone.classList.contains('user-section')){clone.dataset.openInViewer='false';clone.dataset.displayMode='tab';}
+    clone.hidden=false;body.replaceChildren(clone);
   }
   function renderCustomSections(){
     let host=$('#custom-sections');
