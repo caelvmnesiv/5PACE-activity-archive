@@ -4,6 +4,7 @@
 create table if not exists public.page_settings (
   id integer primary key check (id = 1),
   config jsonb not null default '{}'::jsonb,
+  draft_config jsonb,
   updated_at timestamptz not null default now(),
   updated_by uuid references auth.users(id)
 );
@@ -44,6 +45,8 @@ values (1, jsonb_build_object(
   'images', '{}'::jsonb
 ))
 on conflict (id) do nothing;
+
+update public.page_settings set draft_config = config where id = 1 and draft_config is null;
 
 -- The frontend already calls db.rpc('is_admin'). Expose a safe wrapper
 -- around the existing private function so the browser can check its own role.
