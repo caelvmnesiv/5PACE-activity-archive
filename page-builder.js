@@ -78,8 +78,15 @@
     });
   }
   function renderSectionRows(){
-    return sectionDefs.map(s=>{const cfg=state.config.sections[s.id]||{},vis=cfg.visible!==false;return '<div class="pb-section" draggable="true" data-sort-id="'+s.id+'"><span class="pb-grip">⠿</span><span class="pb-section-name">'+s.label+'</span><span class="pb-state">'+(vis?'VISIBLE':'HIDDEN')+'</span><button type="button" data-toggle="'+s.id+'">'+(vis?'HIDE':'SHOW')+'</button></div>';}).join('')+
-      state.config.customSections.map(s=>'<div class="pb-section" draggable="true" data-sort-id="'+safe(s.id)+'"><span class="pb-grip">⠿</span><span class="pb-section-name">'+safe(s.title||'NEW SECTION')+'</span><span class="pb-state">'+(s.visible===false?'HIDDEN':'CUSTOM')+'</span><button type="button" data-custom-toggle="'+safe(s.id)+'">'+(s.visible===false?'SHOW':'HIDE')+'</button><button type="button" data-remove-section="'+safe(s.id)+'">DELETE</button></div>').join('');
+    const items=[
+      ...sectionDefs.map(s=>({id:s.id,label:s.label,order:Number(state.config.sections[s.id]?.order)||1,custom:false})),
+      ...state.config.customSections.map(s=>({id:s.id,label:s.title||'NEW SECTION',order:Number(s.order)||sectionDefs.length+1,custom:true,visible:s.visible!==false}))
+    ].sort((a,b)=>a.order-b.order);
+    return items.map(item=>{
+      if(!item.custom){const cfg=state.config.sections[item.id]||{},vis=cfg.visible!==false;return '<div class="pb-section" draggable="true" data-sort-id="'+item.id+'"><span class="pb-grip">⠿</span><span class="pb-section-name">'+item.label+'</span><span class="pb-state">'+(vis?'VISIBLE':'HIDDEN')+'</span><button type="button" data-toggle="'+item.id+'">'+(vis?'HIDE':'SHOW')+'</button></div>';}
+      const s=state.config.customSections.find(x=>x.id===item.id);
+      return '<div class="pb-section" draggable="true" data-sort-id="'+safe(s.id)+'"><span class="pb-grip">⠿</span><span class="pb-section-name">'+safe(s.title||'NEW SECTION')+'</span><span class="pb-state">'+(s.visible===false?'HIDDEN':'CUSTOM')+'</span><button type="button" data-custom-toggle="'+safe(s.id)+'">'+(s.visible===false?'SHOW':'HIDE')+'</button><button type="button" data-remove-section="'+safe(s.id)+'">DELETE</button></div>';
+    }).join('');
   }
   function renderCopyFields(){
     const groups=[
