@@ -43,7 +43,7 @@
       if(Array.isArray(section.members)&&section.members.length)legacy.push(...section.members);
       else (section.blocks||[]).filter(block=>block.type==='team-grid').forEach(block=>legacy.push(...(block.items||[])));
     });
-    c.teamMembers=Array.isArray(c.teamMembers)?c.teamMembers:legacy;
+    c.teamMembers=Array.isArray(raw?.teamMembers)?raw.teamMembers:legacy;
     c.teamMembers=c.teamMembers.map(member=>({...member,_editorId:member._editorId||'member-'+Math.random().toString(36).slice(2,10)}));
     c.customSections=[];
     return c;
