@@ -98,7 +98,7 @@
     viewer.classList.remove('popup-window');if(mode==='popup')viewer.classList.add('popup-window');
     viewer.classList.add('open');viewer.setAttribute('aria-hidden','false');
     const heading=viewer.querySelector('.viewer-head span');if(heading)heading.textContent=title;
-    body.replaceChildren();if(node){const clone=node.cloneNode(true);clone.querySelectorAll('button').forEach(b=>b.remove());if(clone.classList.contains('user-section'))clone.dataset.openInViewer='false';clone.hidden=false;body.append(clone);}
+    body.replaceChildren();if(node){const clone=node.cloneNode(true);clone.querySelectorAll('button').forEach(b=>b.remove());if(clone.classList.contains('user-section')){clone.dataset.openInViewer='false';clone.dataset.displayMode='tab';}clone.hidden=false;body.append(clone);}
   }
   function openMagazine() {
     viewer.classList.remove('popup-window');viewer.classList.add('open'); viewer.setAttribute('aria-hidden','false'); const heading=viewer.querySelector('.viewer-head span');if(heading)heading.textContent='THE MAGAZINE / HEYZINE VIEWER'; const url = window.HEYZINE_URL || '';
