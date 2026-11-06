@@ -60,7 +60,7 @@
     const { data: { session } } = await db.auth.getSession();
     state.user = session?.user || null;
     $('#login-controls').hidden = !!state.user; $('#register-controls').hidden = !!state.user; $('#session-controls').hidden = !state.user;
-    $('#session-email').textContent = state.user?.email || '';
+    $('#session-email').textContent = state.user?.email || state.user?.phone || '';
     state.isAdmin = false;
     state.adminPanelOpen = false;
     if (state.user) {
@@ -72,11 +72,25 @@
     } else setMessage('Inicia sesión para consultar el directorio privado.');
     await loadActivities();
   }
+  function isPhone(value) { return /^\+[1-9]\d{7,14}$/.test(value); }
+  function syncAuthMethod(prefix) {
+    const method = document.querySelector('#' + prefix + '-method').value;
+    const field = document.querySelector('#' + prefix + '-identifier');
+    field.type = method === 'email' ? 'email' : 'tel';
+    field.placeholder = method === 'email' ? 'Email' : 'Teléfono internacional (+519...)';
+    field.setAttribute('aria-label', method === 'email' ? 'Email' : 'Número de teléfono');
+    field.autocomplete = method === 'email' ? 'email' : 'tel';
+  }
+  $('#login-method').addEventListener('change', () => syncAuthMethod('login'));
+  $('#register-method').addEventListener('change', () => { syncAuthMethod('register'); $('#register-otp-wrap').hidden = true; $('#register-button').hidden = false; });
+  syncAuthMethod('login'); syncAuthMethod('register');
   $('#login-button').addEventListener('click', async () => {
-    const email = $('#login-email').value.trim(), password = $('#login-password').value;
-    if (!email || !password) return setMessage('Introduce tu email y contraseña.');
+    const method = $('#login-method').value, identifier = $('#login-identifier').value.trim(), password = $('#login-password').value;
+    if (!identifier || !password) return setMessage('Introduce tu correo o teléfono y tu contraseña.');
+    if (method === 'phone' && !isPhone(identifier)) return setMessage('Usa el formato internacional, por ejemplo +51987654321.');
     $('#login-button').disabled = true;
-    const { error } = await db.auth.signInWithPassword({ email, password });
+    const credentials = method === 'email' ? { email: identifier, password } : { phone: identifier, password };
+    const { error } = await db.auth.signInWithPassword(credentials);
     $('#login-button').disabled = false;
     if (error) return setMessage('No se pudo iniciar sesión: ' + error.message);
     await refreshSession();
@@ -84,25 +98,44 @@
 
   $('#register-button').addEventListener('click', async () => {
     if (!db) return setMessage('Falta la configuración de Supabase.');
-    const fullName = $('#register-name').value.trim(), email = $('#register-email').value.trim();
-    const password = $('#register-password').value, confirmation = $('#register-password-confirm').value;
-    if (!fullName || !email || !password || !confirmation) return setMessage('Completa todos los campos para solicitar acceso.');
+    const method = $('#register-method').value, fullName = $('#register-name').value.trim();
+    const identifier = $('#register-identifier').value.trim(), password = $('#register-password').value, confirmation = $('#register-password-confirm').value;
+    if (!fullName || !identifier || !password || !confirmation) return setMessage('Completa todos los campos para solicitar acceso.');
+    if (method === 'phone' && !isPhone(identifier)) return setMessage('Usa el formato internacional, por ejemplo +51987654321.');
     if (password.length < 8) return setMessage('La contraseña debe tener al menos 8 caracteres.');
     if (password !== confirmation) return setMessage('Las contraseñas no coinciden.');
     const button = $('#register-button'); button.disabled = true;
-    const { error } = await db.auth.signUp({ email, password, options: { data: { full_name: fullName } } });
+    const options = { data: { full_name: fullName } };
+    const payload = method === 'email' ? { email: identifier, password, options } : { phone: identifier, password, options };
+    const { error } = await db.auth.signUp(payload);
     button.disabled = false;
     if (error) return setMessage('No se pudo crear la cuenta: ' + error.message);
     $('#register-password').value = ''; $('#register-password-confirm').value = '';
-    setMessage('Solicitud recibida. Revisa tu email si se requiere confirmar la cuenta. El acceso al Activity Board se habilitará cuando un administrador apruebe tu solicitud.');
+    if (method === 'phone') {
+      $('#register-otp-wrap').hidden = false; $('#register-button').hidden = true;
+      setMessage('Te enviamos un código SMS. Verifica el número para completar la solicitud; después quedará pendiente de aprobación administrativa.');
+    } else {
+      setMessage('Solicitud recibida. Si la confirmación por correo está activada, revisa tu bandeja. El acceso al Activity Board requiere aprobación administrativa.');
+    }
+  });
+  $('#verify-phone-button').addEventListener('click', async () => {
+    const phone = $('#register-identifier').value.trim(), token = $('#register-otp').value.trim();
+    if (!isPhone(phone) || !/^\d{6}$/.test(token)) return setMessage('Introduce el número internacional y el código SMS de 6 dígitos.');
+    const button = $('#verify-phone-button'); button.disabled = true;
+    const { error } = await db.auth.verifyOtp({ phone, token, type: 'sms' });
+    button.disabled = false;
+    if (error) return setMessage('No se pudo verificar el número: ' + error.message);
+    $('#register-otp-wrap').hidden = true; $('#register-otp').value = '';
+    setMessage('Número verificado. Tu solicitud queda pendiente de aprobación administrativa.');
+    await refreshSession();
   });
   async function loadMemberRequests() {
     const host = $('#member-requests-list'); if (!host || !state.isAdmin) return;
     host.innerHTML = '<p class="admin-hint">Cargando solicitudes…</p>';
-    const { data, error } = await db.from('access_requests').select('id,user_id,email,full_name,status,created_at').order('created_at',{ascending:false});
+    const { data, error } = await db.from('access_requests').select('id,user_id,email,phone,full_name,status,created_at').order('created_at',{ascending:false});
     if (error) { host.innerHTML = '<p class="admin-hint">No se pudieron cargar las solicitudes: ' + escapeHtml(error.message) + '</p>'; return; }
     if (!data?.length) { host.innerHTML = '<p class="admin-hint">No hay solicitudes registradas.</p>'; return; }
-    host.innerHTML = data.map(row => '<div class="member-request-row"><div><strong>' + escapeHtml(row.full_name || 'Member') + '</strong><span>' + escapeHtml(row.email || '') + '</span><small>' + escapeHtml(row.status.toUpperCase()) + '</small></div>' + (row.status === 'pending' ? '<div class="member-request-actions"><button type="button" data-member-status="approved" data-member-id="' + escapeHtml(row.user_id) + '">APPROVE</button><button type="button" data-member-status="rejected" data-member-id="' + escapeHtml(row.user_id) + '">REJECT</button></div>' : '') + '</div>').join('');
+    host.innerHTML = data.map(row => '<div class="member-request-row"><div><strong>' + escapeHtml(row.full_name || 'Member') + '</strong><span>' + escapeHtml(row.email || row.phone || '') + '</span><small>' + escapeHtml(row.status.toUpperCase()) + '</small></div>' + (row.status === 'pending' ? '<div class="member-request-actions"><button type="button" data-member-status="approved" data-member-id="' + escapeHtml(row.user_id) + '">APPROVE</button><button type="button" data-member-status="rejected" data-member-id="' + escapeHtml(row.user_id) + '">REJECT</button></div>' : '') + '</div>').join('');
   }
   $('#refresh-member-requests').addEventListener('click', loadMemberRequests);
   $('#member-requests-list').addEventListener('click', async e => {
