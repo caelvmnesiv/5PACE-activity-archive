@@ -393,6 +393,8 @@ body.admin-mode #viewer .viewer-body>.user-section h2{
 }
 
 
+/* OUR TEAM popup uses the same clean modal surface as the other navigation windows */
+.viewer.popup-window .viewer-body>.our-team-section{display:block!important;width:100%!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;order:initial!important}
 /* CUSTOM POP-UP — grow with its content, while keeping a viewport-safe scroll limit */
 .viewer.popup-window{
   grid-template-rows:auto!important;
