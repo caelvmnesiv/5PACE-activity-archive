@@ -112,6 +112,8 @@
     button.disabled = false;
     if (error) return setMessage('No se pudo actualizar la contraseña: ' + error.message);
     $('#password-recovery').hidden = true;
+    state.recoveryMode = false;
+    $('#recovery-email').hidden = false; $('#send-recovery-button').hidden = false; $('#new-password-fields').hidden = true;
     $('#new-password').value = ''; $('#new-password-confirm').value = '';
     setMessage('Contraseña actualizada. Ya puedes iniciar sesión con ella.');
     await refreshSession();
