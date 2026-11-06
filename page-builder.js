@@ -44,7 +44,7 @@
     style.setProperty('--nav-ink',t.navInk||t.ink);style.setProperty('--nav-accent',t.navAccent||t.red);style.setProperty('--link-ink',t.linkInk||t.ink);
     if(t.displayFont)style.setProperty('--display',"'"+t.displayFont.replace(/[';]/g,'')+"', Impact, sans-serif");
     if(t.bodyFont)style.setProperty('--sans',"'"+t.bodyFont.replace(/[';]/g,'')+"', Arial, sans-serif");
-    sectionDefs.forEach(s=>{const el=$(s.selector),cfg=state.config.sections[s.id]||{};if(el){el.hidden=cfg.visible===false;el.style.order=String(Number(cfg.order)||1);}});
+    sectionDefs.forEach(s=>{const el=$(s.selector),cfg=state.config.sections[s.id]||{};if(el){el.hidden=cfg.visible===false;el.style.order=s.group==='panels'?'0':String(Number(cfg.order)||1);}});
     const main=$('#home');if(main){main.style.display='flex';main.style.flexDirection='column';}
     const panels=$('.panels');if(panels){panels.style.display='grid';panels.style.gridTemplateColumns='repeat(2,minmax(0,1fr))';}
     const customHost=$('#custom-sections');if(customHost){customHost.style.display='contents';}
