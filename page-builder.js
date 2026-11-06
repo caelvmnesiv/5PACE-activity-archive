@@ -30,14 +30,14 @@
     theme:{paper:'#f2f0ec',white:'#fbfaf7',ink:'#090909',red:'#f20d19',line:'#aaa7a0',displayFont:'Barlow Condensed',bodyFont:'Manrope',navInk:'#090909',navAccent:'#f20d19',linkInk:'#090909'},
     sections:Object.fromEntries(sectionDefs.map((s,i)=>[s.id,{visible:true,order:i+1}])),
     navVisibility:{home:true,magazine:true,board:true,archive:true,about:true},
-    images:{},copy:{},copyLinks:{},teamMembers:[],customSections:[]
+    images:{},copy:{},copyLinks:{},magazineUrl:window.HEYZINE_URL||'',teamMembers:[],customSections:[]
   };
   const clone = x => JSON.parse(JSON.stringify(x));
   const safe = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   function mergeConfig(raw){
     const c={...clone(defaults),...(raw||{})};
     c.theme={...defaults.theme,...(c.theme||{})};c.sections={...defaults.sections,...(c.sections||{})};
-    c.navVisibility={...defaults.navVisibility,...(c.navVisibility||{})};c.images={...(c.images||{})};c.copy={...(c.copy||{})};c.copyLinks={...(c.copyLinks||{})};
+    c.navVisibility={...defaults.navVisibility,...(c.navVisibility||{})};c.images={...(c.images||{})};c.copy={...(c.copy||{})};c.copyLinks={...(c.copyLinks||{})};c.magazineUrl=String(c.magazineUrl||window.HEYZINE_URL||'');
     const legacy=[];
     (Array.isArray(c.customSections)?c.customSections:[]).forEach(section=>{
       if(Array.isArray(section.members)&&section.members.length)legacy.push(...section.members);
@@ -49,7 +49,7 @@
     return c;
   }
   function applyConfig(){
-    const t=state.config.theme,style=document.documentElement.style;
+    const t=state.config.theme,style=document.documentElement.style;window.HEYZINE_URL=state.config.magazineUrl||'';
     Object.entries({paper:t.paper,white:t.white,ink:t.ink,red:t.red,line:t.line}).forEach(([k,v])=>style.setProperty('--'+k,v));
     style.setProperty('--nav-ink',t.navInk||t.ink);style.setProperty('--nav-accent',t.navAccent||t.red);style.setProperty('--link-ink',t.linkInk||t.ink);
     if(t.displayFont)style.setProperty('--display',"'"+t.displayFont.replace(/[';]/g,'')+"', Impact, sans-serif");
@@ -116,7 +116,7 @@
         const val=Object.prototype.hasOwnProperty.call(state.config.copy,key)?state.config.copy[key]:fallback,link=state.config.copyLinks[key]||{};
         const navKey=key.startsWith('nav.')?key.slice(4):null;const navControl=({home:'home',magazine:'magazine',board:'board',archive:'archive',about:'about'}[navKey]);return '<label class="pb-copy-field"><span>'+safe(key.split('.').slice(1).join(' / ').replace(/_/g,' ').toUpperCase())+'</span><textarea data-copy="'+key+'" rows="'+(String(val).length>90?4:2)+'">'+safe(val)+'</textarea>'+(navControl?'<label class="pb-nav-visibility"><input type="checkbox" data-nav-visible="'+navControl+'" '+(state.config.navVisibility[navControl]!==false?'checked':'')+'> SHOW IN NAVIGATION BAR</label>':'')+'<span>FRASE ENLAZADA (OPCIONAL)</span><input data-link-text="'+key+'" value="'+safe(link.text||'')+'" placeholder="Ej. conoce al equipo"><span>URL EXTERNA</span><input data-link-url="'+key+'" value="'+safe(link.url||'')+'" placeholder="https://..." type="url"></label>';
       }).join('');
-      return '<details class="pb-copy-group" data-accordion-key="copy-'+safe(group.id)+'" '+(index===0?'open':'')+'><summary><span class="pb-copy-group-title">'+safe(group.title)+'</span><span class="pb-copy-group-hint">'+safe(group.hint)+'</span><span class="pb-copy-group-count">'+group.keys.length+' TEXTOS</span></summary><div class="pb-copy-grid">'+fields+'</div></details>';
+      const extra=group.id==='magazine'?'<label class="pb-copy-field pb-magazine-url-field"><span>LINK DE VISTA PREVIA / HEYZINE</span><input type="url" data-magazine-url value="'+safe(state.config.magazineUrl||'')+'" placeholder="https://heyzine.com/flip-book/..."/><small>Este enlace se utilizará al abrir la portada y el botón VER ÚLTIMA EDICIÓN.</small></label>':'';return '<details class="pb-copy-group" data-accordion-key="copy-'+safe(group.id)+'" '+(index===0?'open':'')+'><summary><span class="pb-copy-group-title">'+safe(group.title)+'</span><span class="pb-copy-group-hint">'+safe(group.hint)+'</span><span class="pb-copy-group-count">'+group.keys.length+' TEXTOS</span></summary><div class="pb-copy-grid">'+fields+extra+'</div></details>';
     }).join('');
   }
   function memberEditorMarkup(member,index){
@@ -194,6 +194,7 @@
     }));
     root.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{state.activeTab=btn.dataset.tab;root.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===btn));root.querySelectorAll('[data-panel]').forEach(x=>x.hidden=x.dataset.panel!==state.activeTab);}));
     root.querySelectorAll('[data-copy]').forEach(el=>el.addEventListener('input',()=>{state.config.copy[el.dataset.copy]=el.value;applyConfig();}));
+    root.querySelectorAll('[data-magazine-url]').forEach(el=>el.addEventListener('input',()=>{state.config.magazineUrl=el.value.trim();applyConfig();}));
     root.querySelectorAll('[data-nav-visible]').forEach(el=>el.addEventListener('change',()=>{state.config.navVisibility[el.dataset.navVisible]=el.checked;applyConfig();}));
     root.querySelectorAll('[data-link-text],[data-link-url]').forEach(el=>el.addEventListener('input',()=>{const key=el.dataset.linkText||el.dataset.linkUrl;if(!Object.prototype.hasOwnProperty.call(state.config.copy,key)){const pair=editable.find(item=>item[0]===key),target=pair?$(pair[1]):null;state.config.copy[key]=target?.textContent||'';}state.config.copyLinks[key]=state.config.copyLinks[key]||{};if(el.dataset.linkText)state.config.copyLinks[key].text=el.value;else state.config.copyLinks[key].url=el.value;applyConfig();}));
     root.querySelectorAll('[data-sort-id]').forEach(row=>{row.addEventListener('dragstart',e=>{state.dragId=row.dataset.sortId;e.dataTransfer.effectAllowed='move';});row.addEventListener('dragover',e=>e.preventDefault());row.addEventListener('drop',e=>{e.preventDefault();const target=row.dataset.sortId;if(!state.dragId||state.dragId===target)return;const movable=sectionDefs.filter(x=>x.id!=='hero'&&x.group!=='panels').map(x=>x.id);movable.sort((x,y)=>{const ox=state.config.sections[x]?.order??2;const oy=state.config.sections[y]?.order??2;return ox-oy;});const from=movable.indexOf(state.dragId),to=movable.indexOf(target);if(from<0||to<0)return;movable.splice(to,0,movable.splice(from,1)[0]);movable.forEach((id,i)=>{const order=i+2;if(state.config.sections[id])state.config.sections[id].order=order;});state.dragId=null;applyConfig();render();root.querySelector('[data-tab="structure"]')?.click();});});
