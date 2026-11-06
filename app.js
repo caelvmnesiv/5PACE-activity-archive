@@ -100,7 +100,7 @@
   async function loadMemberRequests() {
     const host = $('#member-requests-list'); if (!host || !state.isAdmin) return;
     host.innerHTML = '<p class="admin-hint">Loading requests…</p>';
-    const { data, error } = await db.from('member_access_requests').select('user_id,email,full_name,status,requested_at').order('requested_at',{ascending:false});
+    const { data, error } = await db.from('access_requests').select('id,user_id,email,full_name,status,created_at').order('created_at',{ascending:false});
     if (error) { host.innerHTML = '<p class="admin-hint">No se pudieron cargar las solicitudes: ' + escapeHtml(error.message) + '</p>'; return; }
     if (!data?.length) { host.innerHTML = '<p class="admin-hint">No hay solicitudes registradas.</p>'; return; }
     host.innerHTML = data.map(row => '<div class="member-request-row"><div><strong>' + escapeHtml(row.full_name || 'Member') + '</strong><span>' + escapeHtml(row.email) + '</span><small>' + escapeHtml(row.status.toUpperCase()) + '</small></div>' + (row.status === 'pending' ? '<div class="member-request-actions"><button type="button" data-member-status="approved" data-member-id="' + escapeHtml(row.user_id) + '">APPROVE</button><button type="button" data-member-status="rejected" data-member-id="' + escapeHtml(row.user_id) + '">REJECT</button></div>' : '') + '</div>').join('');
@@ -109,7 +109,7 @@
   $('#member-requests-list').addEventListener('click', async e => {
     const button = e.target.closest('[data-member-status]'); if (!button || !state.isAdmin) return;
     button.disabled = true;
-    const { error } = await db.from('member_access_requests').update({ status: button.dataset.memberStatus, reviewed_at: new Date().toISOString(), reviewed_by: state.user.id }).eq('user_id', button.dataset.memberId);
+    const { error } = await db.from('access_requests').update({ status: button.dataset.memberStatus, reviewed_at: new Date().toISOString(), reviewed_by: state.user.id }).eq('user_id', button.dataset.memberId);
     if (error) { button.disabled = false; return setMessage('No se pudo actualizar la solicitud: ' + error.message); }
     await loadMemberRequests(); setMessage(button.dataset.memberStatus === 'approved' ? 'Miembro aprobado. Ya puede acceder cuando inicie sesión.' : 'Solicitud rechazada.');
   });
