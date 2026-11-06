@@ -73,3 +73,36 @@
 .pb-copy-field span{font-size:8px;color:#666}
 .pb-copy-field textarea{min-height:40px;background:#fff}
 @media(max-width:700px){.pb-copy-group .pb-copy-grid{grid-template-columns:1fr}.pb-copy-group>summary{grid-template-columns:minmax(0,1fr) auto}}
+
+
+/* Persistent Carrd-style admin workspace */
+#admin-panel[hidden]{display:none!important}
+#admin-panel.admin-panel{position:fixed;z-index:50;top:0;right:0;bottom:0;width:min(520px,44vw);max-height:100vh;margin:0;padding:0;border:0;border-left:1px solid var(--ink);background:var(--white);box-shadow:-16px 0 38px #09090920;display:flex;flex-direction:column;overflow:hidden}
+.admin-shell-head{position:sticky;top:0;z-index:2;flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px;background:var(--ink);color:var(--white);border-bottom:1px solid var(--line)}
+.admin-shell-head strong{display:block;font:800 25px/.95 var(--display);letter-spacing:.02em}
+.admin-shell-head span{display:block;margin-top:5px;color:#c7c4bf;font:8px var(--mono);letter-spacing:.08em}
+.admin-shell-head button{width:34px;height:34px;border:1px solid #aaa;background:transparent;color:white;font:20px var(--sans);cursor:pointer}
+.admin-shell-content{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:16px 18px 30px}
+.admin-shell-content .admin-heading{padding-bottom:9px;border-bottom:1px solid var(--line)}
+.admin-shell-content #activity-form{grid-template-columns:1fr 1fr}
+.admin-shell-content #activity-title,.admin-shell-content #activity-url{grid-column:1/-1}
+.admin-shell-content .admin-actions{grid-column:1/-1}
+.admin-shell-content #page-builder{margin-top:20px}
+.admin-open{position:fixed;z-index:49;right:18px;top:18px;border:1px solid var(--ink);background:var(--ink);color:white;padding:11px 14px;font:9px var(--mono);letter-spacing:.05em;box-shadow:0 4px 16px #09090920;cursor:pointer}
+.admin-open[hidden]{display:none!important}
+body.admin-mode{padding-right:min(520px,44vw)}
+.activity-row,.identity,.nav nav a,.footer a,.user-section a{color:var(--link-ink,var(--ink))}
+.activity-row:visited,.identity:visited,.nav nav a:visited,.footer a:visited{color:var(--link-ink,var(--ink))}
+.nav nav a:hover,.nav nav a.active{color:var(--nav-accent,var(--red))}
+.pb-copy-groups{display:grid;grid-template-columns:1fr;gap:9px}
+.pb-copy-groups>.pb-copy-group{margin:0}
+@media(max-width:900px){
+  body.admin-mode{padding-right:0}
+  #admin-panel.admin-panel{width:min(520px,100vw)}
+}
+@media(max-width:700px){
+  #admin-panel.admin-panel{width:100vw}
+  .admin-shell-content{padding:13px 14px 24px}
+  .admin-shell-content #activity-form{grid-template-columns:1fr}
+  .admin-shell-content #activity-title,.admin-shell-content #activity-url,.admin-shell-content .admin-actions{grid-column:auto}
+}
