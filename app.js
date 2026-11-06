@@ -2,7 +2,7 @@
   const $ = (s) => document.querySelector(s);
   const list = $('#activity-list'), search = $('#search'), filter = $('#filter');
   const icons = ['▦','✳','△','□','●','▦','✳','✦','＋'];
-  const state = { activities: [], isAdmin: false, user: null };
+  const state = { activities: [], isAdmin: false, user: null, adminPanelOpen: false };
   const configured = window.supabase && window.SUPABASE_URL && window.SUPABASE_ANON_KEY;
   const db = configured ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY) : null;
   const escapeHtml = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -27,9 +27,9 @@
       return `<${tag} class="activity-row" ${href}><span class="activity-symbol">${icons[i % icons.length]}</span><span class="activity-title">${escapeHtml(a.title)}</span><span class="type-pill">${escapeHtml(a.category || 'Activity')}</span><span class="activity-arrow">${url ? '→' : '—'}</span>${edit}</${tag}>`;
     }).join('') || `<p class="empty-state">${state.user ? 'No hay actividades disponibles para esta cuenta.' : 'Inicia sesión para acceder al Activity Board.'}</p>`;
     $('#result-count').textContent = String(rows.length).padStart(2, '0') + ' ACTIVIDADES';
-    $('#admin-panel').hidden = !state.isAdmin;
-    $('#admin-open').hidden = !state.isAdmin || !$('#admin-panel').hidden;
-    document.body.classList.toggle('admin-mode', state.isAdmin && !$('#admin-panel').hidden);
+    $('#admin-panel').hidden = !(state.isAdmin && state.adminPanelOpen);
+    $('#admin-open').hidden = !state.isAdmin || state.adminPanelOpen;
+    document.body.classList.toggle('admin-mode', state.isAdmin && state.adminPanelOpen);
     if (state.isAdmin) wireRowActions();
   }
   function wireRowActions() {
@@ -62,9 +62,11 @@
     $('#login-controls').hidden = !!state.user; $('#session-controls').hidden = !state.user;
     $('#session-email').textContent = state.user?.email || '';
     state.isAdmin = false;
+    state.adminPanelOpen = false;
     if (state.user) {
       const { data, error } = await db.rpc('is_admin');
       state.isAdmin = !error && data === true;
+      state.adminPanelOpen = state.isAdmin;
       setMessage(state.isAdmin ? 'Sesión administrativa activa.' : 'Sesión iniciada. Acceso sujeto a aprobación.');
     } else setMessage('Inicia sesión para consultar el directorio privado.');
     await loadActivities();
@@ -103,12 +105,14 @@
   document.addEventListener('keydown', e => { if (e.key === 'Escape') $('#close-viewer').click(); });
   $('.menu-toggle').addEventListener('click', () => $('.nav').classList.toggle('nav-open'));
   $('#admin-close').addEventListener('click', () => {
+    state.adminPanelOpen = false;
     $('#admin-panel').hidden = true;
-    $('#admin-open').hidden = false;
+    $('#admin-open').hidden = !state.isAdmin;
     document.body.classList.remove('admin-mode');
   });
   $('#admin-open').addEventListener('click', () => {
     if (!state.isAdmin) return;
+    state.adminPanelOpen = true;
     $('#admin-panel').hidden = false;
     $('#admin-open').hidden = true;
     document.body.classList.add('admin-mode');
