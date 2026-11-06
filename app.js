@@ -59,7 +59,7 @@
     if (!db) { setMessage('Falta la configuración de Supabase.'); return; }
     const { data: { session } } = await db.auth.getSession();
     state.user = session?.user || null;
-    $('#login-controls').hidden = !!state.user; $('#session-controls').hidden = !state.user;
+    $('#login-controls').hidden = !!state.user; $('#register-controls').hidden = !!state.user; $('#session-controls').hidden = !state.user;
     $('#session-email').textContent = state.user?.email || '';
     state.isAdmin = false;
     state.adminPanelOpen = false;
@@ -68,6 +68,7 @@
       state.isAdmin = !error && data === true;
       state.adminPanelOpen = state.isAdmin;
       setMessage(state.isAdmin ? 'Sesión administrativa activa.' : 'Sesión iniciada. Acceso sujeto a aprobación.');
+      if (state.isAdmin) await loadMemberRequests();
     } else setMessage('Inicia sesión para consultar el directorio privado.');
     await loadActivities();
   }
@@ -80,6 +81,38 @@
     if (error) return setMessage('No se pudo iniciar sesión: ' + error.message);
     await refreshSession();
   });
+
+  $('#register-button').addEventListener('click', async () => {
+    if (!db) return setMessage('Falta la configuración de Supabase.');
+    const fullName = $('#register-name').value.trim(), email = $('#register-email').value.trim();
+    const password = $('#register-password').value, confirmation = $('#register-password-confirm').value;
+    if (!fullName || !email || !password || !confirmation) return setMessage('Completa todos los campos para solicitar acceso.');
+    if (password.length < 8) return setMessage('La contraseña debe tener al menos 8 caracteres.');
+    if (password !== confirmation) return setMessage('Las contraseñas no coinciden.');
+    const button = $('#register-button'); button.disabled = true;
+    const { error } = await db.auth.signUp({ email, password, options: { data: { full_name: fullName } } });
+    button.disabled = false;
+    if (error) return setMessage('No se pudo crear la cuenta: ' + error.message);
+    $('#register-password').value = ''; $('#register-password-confirm').value = '';
+    setMessage('Solicitud recibida. Revisa tu email si se requiere confirmar la cuenta. El acceso al Activity Board se habilitará cuando un administrador apruebe tu solicitud.');
+  });
+  async function loadMemberRequests() {
+    const host = $('#member-requests-list'); if (!host || !state.isAdmin) return;
+    host.innerHTML = '<p class="admin-hint">Cargando solicitudes…</p>';
+    const { data, error } = await db.from('access_requests').select('id,user_id,email,full_name,status,created_at').order('created_at',{ascending:false});
+    if (error) { host.innerHTML = '<p class="admin-hint">No se pudieron cargar las solicitudes: ' + escapeHtml(error.message) + '</p>'; return; }
+    if (!data?.length) { host.innerHTML = '<p class="admin-hint">No hay solicitudes registradas.</p>'; return; }
+    host.innerHTML = data.map(row => '<div class="member-request-row"><div><strong>' + escapeHtml(row.full_name || 'Member') + '</strong><span>' + escapeHtml(row.email || '') + '</span><small>' + escapeHtml(row.status.toUpperCase()) + '</small></div>' + (row.status === 'pending' ? '<div class="member-request-actions"><button type="button" data-member-status="approved" data-member-id="' + escapeHtml(row.user_id) + '">APPROVE</button><button type="button" data-member-status="rejected" data-member-id="' + escapeHtml(row.user_id) + '">REJECT</button></div>' : '') + '</div>').join('');
+  }
+  $('#refresh-member-requests').addEventListener('click', loadMemberRequests);
+  $('#member-requests-list').addEventListener('click', async e => {
+    const button = e.target.closest('[data-member-status]'); if (!button || !state.isAdmin) return;
+    button.disabled = true;
+    const { error } = await db.from('access_requests').update({ status: button.dataset.memberStatus, reviewed_at: new Date().toISOString(), reviewed_by: state.user.id }).eq('user_id', button.dataset.memberId);
+    if (error) { button.disabled = false; return setMessage('No se pudo actualizar la solicitud: ' + error.message); }
+    await loadMemberRequests(); setMessage(button.dataset.memberStatus === 'approved' ? 'Miembro aprobado. Ya puede acceder cuando inicie sesión.' : 'Solicitud rechazada.');
+  });
+
   $('#logout-button').addEventListener('click', async () => { await db.auth.signOut(); state.user = null; state.isAdmin = false; await refreshSession(); });
   $('#activity-form').addEventListener('submit', async e => {
     e.preventDefault(); if (!state.isAdmin) return;
