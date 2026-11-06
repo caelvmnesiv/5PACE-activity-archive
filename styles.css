@@ -435,3 +435,64 @@ body.admin-mode #viewer .viewer-body>.user-section h2{
   .viewer.popup-window .viewer-body{width:100%!important;max-height:calc(100dvh - 68px)!important;padding:16px!important}
   .viewer.popup-window .user-team-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 }
+
+
+/* CONTENT EDITOR — nested accordions for a quiet, orderly workspace */
+.pb-custom{
+  display:block!important;
+  padding:0!important;
+  overflow:hidden!important;
+}
+.pb-custom>.pb-custom-head,
+.pb-custom>summary.pb-custom-head{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:12px!important;
+  padding:13px 14px!important;
+  cursor:pointer!important;
+  list-style:none!important;
+  background:#f1eee8!important;
+  border-bottom:1px solid var(--line)!important;
+}
+.pb-custom>summary::-webkit-details-marker,
+.pb-team-block>summary::-webkit-details-marker,
+.pb-team-card-editor>summary::-webkit-details-marker{display:none}
+.pb-custom>summary::marker,
+.pb-team-block>summary::marker,
+.pb-team-card-editor>summary::marker{content:""}
+.pb-custom-content{padding:12px!important}
+.pb-collapse-indicator{font:12px var(--mono);margin-left:auto;color:var(--red)}
+details[open]>.pb-custom-head .pb-collapse-indicator,
+details[open]>summary .pb-collapse-indicator{transform:rotate(45deg)}
+.pb-team-block{
+  display:block!important;
+  padding:0!important;
+  margin:10px 0!important;
+  border:1px solid var(--line)!important;
+  background:#fff!important;
+}
+.pb-team-block>summary{
+  display:flex!important;align-items:center!important;gap:9px!important;
+  padding:11px 12px!important;cursor:pointer!important;list-style:none!important;
+  background:#f7f5f1!important;
+}
+.pb-team-columns-note{margin:0!important}
+.pb-team-grid-edit{padding:8px!important}
+.pb-team-card-editor{
+  display:block!important;
+  padding:0!important;
+  margin:7px 0!important;
+  border:1px solid var(--line)!important;
+  background:#fff!important;
+}
+.pb-team-card-editor>summary{
+  display:flex!important;align-items:center!important;gap:8px!important;
+  padding:10px 12px!important;cursor:pointer!important;list-style:none!important;
+  font:9px var(--mono)!important;
+}
+.pb-team-card-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px;border-top:1px solid var(--line)}
+.pb-team-card-fields>label:nth-of-type(2),
+.pb-team-card-fields>label:nth-of-type(5){grid-column:1/-1}
+.pb-team-card-fields>div{grid-column:1/-1}
+@media(max-width:480px){.pb-team-card-fields{grid-template-columns:1fr}}
