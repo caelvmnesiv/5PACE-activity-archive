@@ -626,3 +626,18 @@ details[open]>summary .pb-collapse-indicator{transform:rotate(45deg)}
 .otp-wrap input{min-width:0;height:34px;border:1px solid var(--line);padding:0 9px;font:10px var(--mono)}
 .otp-wrap button{height:34px;border:1px solid var(--red);background:var(--red);color:#fff;padding:0 10px;font:9px var(--mono);cursor:pointer}
 @media(max-width:480px){.otp-wrap{grid-template-columns:1fr}}
+
+
+/* PASSWORD RECOVERY + ADMIN-ONLY MEMBER PREVIEW */
+.auth-text-button{border:0!important;background:transparent!important;color:var(--red)!important;text-decoration:underline;font:8px var(--mono)!important;cursor:pointer;padding:5px!important}
+.password-recovery{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:10px;margin-top:9px;border:1px solid var(--line);background:var(--white)}
+.password-recovery[hidden],.password-recovery [hidden]{display:none!important}
+.password-recovery>strong,.password-recovery>p{grid-column:1/-1;margin:0;font:9px var(--mono);color:var(--ink)}
+.password-recovery input{width:100%;min-width:0;height:34px;padding:0 9px;border:1px solid var(--line);background:#fff;font:10px var(--mono)}
+.password-recovery button:not(.auth-text-button){min-height:34px;border:1px solid var(--red);background:var(--red);color:#fff;padding:0 10px;font:9px var(--mono);cursor:pointer}
+.password-recovery #new-password-fields{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.password-recovery #new-password-fields button{grid-column:1/-1}
+.password-recovery>.auth-text-button{justify-self:start}
+.member-preview-mode #admin-panel,.member-preview-mode #admin-open{display:none!important}
+.member-preview-mode #view-as-member-button{background:var(--red);color:#fff}
+@media(max-width:480px){.password-recovery,#new-password-fields{grid-template-columns:1fr!important}.password-recovery #new-password-fields{grid-template-columns:1fr!important}}
